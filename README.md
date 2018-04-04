@@ -1,6 +1,6 @@
 # Paradigmas de programacion (Grupo 16)
 # Functional Coins - Entrega 1
-Las BlockChains son cada vez más populares para almacenar datos distribuidos a lo largo del mundo. Así que venimos a reinventar la rueda y hacer nuestro propio BlockChain para guardar transacciones de nuestra moneda funcional.
+Las _BlockChains_ son cada vez más populares para almacenar datos distribuidos a lo largo del mundo. Así que venimos a reinventar la rueda y hacer nuestro propio BlockChain para guardar transacciones de nuestra moneda funcional.
 
 # Eventos
 Hay distintos eventos que pueden acontecer sobre la billetera (una cantidad de dinero) de un usuario. Por ejemplo:
