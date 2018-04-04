@@ -93,6 +93,7 @@ A fines de hacer pruebas, crear esta entidad, e indicar su tipo:
 * Transacción 5: Pepe le da 7 unidades a Lucho.
 
 La solución debe ser escalable para crear muchas transacciones de este estilo sin repetir lógica. Consultar:
+
 16) Aplicar la transacción 5 a Pepe. Debería causar el evento de extracción de 7 unidades. Al aplicarlo a una billetera de 10 monedas, debería dar una nueva billetera de 3.
 17) Aplicar la transacción 5 a Lucho. Debería causar el evento de depósito de 7 unidades. Al aplicarlo a una billetera de 10 monedas, quedando con 17.
 
