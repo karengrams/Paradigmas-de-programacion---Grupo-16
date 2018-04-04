@@ -1,6 +1,6 @@
 # Paradigmas de programacion (Grupo 16)
 # Functional Coins - Entrega 1
-Las _BlockChains_ son cada vez más populares para almacenar datos distribuidos a lo largo del mundo. Así que venimos a reinventar la rueda y hacer nuestro propio BlockChain para guardar transacciones de nuestra moneda funcional.
+Las BlockChains son cada vez más populares para almacenar datos distribuidos a lo largo del mundo. Así que venimos a reinventar la rueda y hacer nuestro propio BlockChain para guardar transacciones de nuestra moneda funcional.
 
 # Eventos
 Hay distintos eventos que pueden acontecer sobre la billetera (una cantidad de dinero) de un usuario. Por ejemplo:
@@ -47,7 +47,7 @@ Ahora tenemos Transacciones de cierto usuario por cierto evento. Por ejemplo: Pe
 Ya no nos interesa el evento por separado, sino a quién debería aplicarse. ¿Por qué? Porque más adelante vamos a tener todas las transacciones mezcladas. Así que tenemos que poder aplicarlas a cualquier usuario, pero solo causar el evento deseado al que corresponda.
 Por lo tanto, la transacción se puede aplicar a alguien, y eso produce cierto evento para su billetera.
 
-Ejemplo: Con la transacción “Pepe tiene un upgrade”, si se aplica a Lucho, el resultado de esa transacción sería el evento “Queda igual”. Por el contrario, si se aplica a Pepe, el evento sería “Upgrade” tal cual se definió en la transacción.
+Ejemplo: Con la transacción “Pepe tiene un upgrade”, si se aplica a Lucho, el resultado de esa transacción sería el evento “Queda igual”. Por el contrario, si se aplica a Pepe, el evento sería “Upgrade”(1) tal cual se definió en la transacción.
 Al comparar si el usuario al cual se le aplica la transacción es el correcto, debemos fijarnos si tiene el mismo nombre.
 
 Para facilitar las pruebas, crear las siguientes transacciones:
@@ -62,5 +62,45 @@ Luego, consultar lo siguiente sin definir nuevas funciones:
 13) Crear un “Pepe 2” para hacer pruebas, que tenga todo igual al anterior, pero con saldo de 20.
 Luego, hacer que la transacción 2 se aplique al nuevo Pepe. Aplicar el evento resultante a una billetera de 50 monedas, y verificar que aumenta quedando con 55.
 Notar que si bien son 2 pepes diferentes (la transacción 2 se creó para el antiguo pero se aplicó en el nuevo), debemos saber que representan al mismo usuario por tener el mismo nombre.
+
+Definir y utilizar el tipo Transacción de la forma más conveniente.
+
+(1) Ayudita: Por más que lo pongamos entre comillas, no nos referimos a que se modele como un string, sino simplemente a citar la definición del evento de más arriba. Recuerden que es muy raro que queramos algo de tipo string.
+
+# Nuevos eventos
+Además de los anteriores, agregar:
+* Toco y me voy: depósito de 15 monedas, tener un upgrade, y cierre de la cuenta.
+* Ahorrante errante: depóstio de 1 moneda, luego depósito de 2, extracción de 1, depósito de 8, tener un upgrade, y depósito de 10.
+
+Aclaración: A futuro, se cobrará una comisión por cada movimiento de dinero, así que queremos tener cada operación por separado. Es decir, en los casos como Ahorrante errante, debemos representar cada uno de los pasos sin juntarlos en uno solo (ejemplo, tener separado el depósito de 1 y luego el de 2, en vez de un solo depósito de 3).
+
+Únicamente a fines de hacer pruebas, agregar estas dos transacciones:
+* Transacción 3: Lucho toca y se va.
+* Transacción 4: Lucho es un ahorrante errante.
+
+14 y 15) Consultar cada caso al usuario que la generó, y ver cómo queda una billetera inicial de 10 monedas. En el primer caso quedaría con 0 (porque cerró su cuenta) y en el segundo 34.
+
+# Pagos entre usuarios
+
+Ahora tenemos transacciones más complejas, los pagos entre usuarios. Por ejemplo: Pepe le da 5 unidades a Lucho.
+* Si la transacción se aplica a Pepe, el evento será de “extracción de 5 unidades”.
+* Si la transacción se aplica a Lucho, el evento será de “depósito de 5 unidades”.
+* En cualquier otro caso, la billetera queda igual (es decir, se produce el evento “Queda igual”)
+
+Definir el tipo de estas situaciones de la manera más conveniente.
+A fines de hacer pruebas, crear esta entidad, e indicar su tipo:
+* Transacción 5: Pepe le da 7 unidades a Lucho.
+
+La solución debe ser escalable para crear muchas transacciones de este estilo sin repetir lógica. Consultar:
+16) Aplicar la transacción 5 a Pepe. Debería causar el evento de extracción de 7 unidades. Al aplicarlo a una billetera de 10 monedas, debería dar una nueva billetera de 3.
+17) Aplicar la transacción 5 a Lucho. Debería causar el evento de depósito de 7 unidades. Al aplicarlo a una billetera de 10 monedas, quedando con 17.
+
+# Testing
+Se solicita modelar todas las consultas anteriores, como tests bien descriptivos.
+
+
+
+
+
 
 
