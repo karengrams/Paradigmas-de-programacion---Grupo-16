@@ -78,7 +78,8 @@ Aclaración: A futuro, se cobrará una comisión por cada movimiento de dinero, 
 * Transacción 3: Lucho toca y se va.
 * Transacción 4: Lucho es un ahorrante errante.
 
-14) y 15) Consultar cada caso al usuario que la generó, y ver cómo queda una billetera inicial de 10 monedas. En el primer caso quedaría con 0 (porque cerró su cuenta) y en el segundo 34.
+14) y;
+15) Consultar cada caso al usuario que la generó, y ver cómo queda una billetera inicial de 10 monedas. En el primer caso quedaría con 0 (porque cerró su cuenta) y en el segundo 34.
 
 # Pagos entre usuarios
 
