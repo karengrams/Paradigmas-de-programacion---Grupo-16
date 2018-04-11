@@ -21,7 +21,7 @@ probarFunciones = hspec $ do
   describe "Testings aplicados a una billetera de 10 monedas:" $ do
    it "Despues de depositarle 10 monedas, la billetera cuenta con 20 monedas." $ dinero (depositar 10 pepe) `shouldBe` 20
    it "Despues de extraer 3 monedas, la billetera cuenta con 7 monedas." $ dinero (extraer (-3) pepe) `shouldBe` 7
-   it "Despues de extraer 15 monedas, la bileltera cuenta con 0 monedas." $ dinero(extraer(-15) pepe) `shouldBe` 0
+   it "Despues de extraer 15 monedas, la billetera cuenta con 0 monedas." $ dinero(extraer (-15) pepe) `shouldBe` 0
    it "Despues de un upgrade, la billetera cuenta con 12 monedas." $ dinero (upgrade pepe) `shouldBe` 12
    it "Cuando se cierra la cuenta, la billetera cuenta con 0 monedas." $ dinero (cerrarCuenta pepe) `shouldBe` 0
    it "La billetera cuenta con 10 monedas." $ do dinero(quedaIgual(pepe)) `shouldBe` 10
