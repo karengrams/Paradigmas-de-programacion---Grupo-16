@@ -1,5 +1,7 @@
--- Functional Coins - Entrega 1
--- Grupo 16
+--------------------------------------
+-- FUNCTIONAL COINS - TP1 Entrega 1 --
+--            GRUPO 16              --
+--------------------------------------
 
 {-# LANGUAGE NoMonomorphismRestriction #-}
 import Text.Show.Functions
@@ -12,39 +14,52 @@ nombre :: String,
 dinero :: Float
 } deriving (Show, Eq)
 
-pepe = Billetera "José" 10 
-pepe2 = Billetera "José" 20
-pepe3 = Billetera "José" 50
+type Evento = Billetera -> Billetera
+type Transaccion = Billetera -> Evento
+
+--------------------
+--  BILLETERAS    --
+--------------------
+
+pepe = Billetera "Jose" 10 
+pepe2 = Billetera "Jose" 20
+pepe3 = Billetera "Jose" 50
 lucho = Billetera "Luciano" 2
+
+--------------------
+--    TESTING     --
+--------------------
 
 probarFunciones = hspec $ do
   describe "Testings aplicados a una billetera de 10 monedas:" $ do
-   it "Despues de depositarle 10 monedas, la billetera cuenta con 20 monedas." $ dinero (depositar 10 pepe) `shouldBe` 20
-   it "Despues de extraer 3 monedas, la billetera cuenta con 7 monedas." $ dinero (extraer (-3) pepe) `shouldBe` 7
-   it "Despues de extraer 15 monedas, la billetera cuenta con 0 monedas." $ dinero(extraer (-15) pepe) `shouldBe` 0
-   it "Despues de un upgrade, la billetera cuenta con 12 monedas." $ dinero (upgrade pepe) `shouldBe` 12
-   it "Cuando se cierra la cuenta, la billetera cuenta con 0 monedas." $ dinero (cerrarCuenta pepe) `shouldBe` 0
-   it "La billetera cuenta con 10 monedas." $ do dinero(quedaIgual(pepe)) `shouldBe` 10
-   it "Luego de depositar 1000 monedas y realizarle un upgrade, la billetera cuenta con 1020 monedas." $ dinero((upgrade.depositar(1000)) pepe) `shouldBe` 1020
+   it " 1- Despues de depositarle 10 monedas, la billetera cuenta con 20 monedas." $ dinero (depositar 10 (Billetera "Una Billetera De 10" 10)) `shouldBe` 20 
+   it " 2- Despues de extraer 3 monedas, la billetera cuenta con 7 monedas." $ dinero (extraer (-3) (Billetera "Una Billetera De 10" 10)) `shouldBe` 7
+   it " 3- Despues de extraer 15 monedas, la billetera cuenta con 0 monedas." $ dinero(extraer (-15) (Billetera "Una Billetera De 10" 10)) `shouldBe` 0
+   it " 4- Despues de un upgrade, la billetera cuenta con 12 monedas." $ dinero (upgrade (Billetera "Una Billetera De 10" 10)) `shouldBe` 12
+   it " 5- Cuando se cierra la cuenta, la billetera cuenta con 0 monedas." $ dinero (cerrarCuenta (Billetera "Una Billetera De 10" 10)) `shouldBe` 0
+   it " 6- La billetera cuenta con 10 monedas." $ do dinero(quedaIgual((Billetera "Una Billetera De 10" 10))) `shouldBe` 10
+   it " 7- Luego de depositar 1000 monedas y realizarle un upgrade, la billetera cuenta con 1020 monedas." $ dinero((upgrade.depositar (1000)) (Billetera "Una Billetera De 10" 10)) `shouldBe` 1020
   describe "Testings de las operaciones aplicados a las billeteras de Lucho y Pepe:" $ do
-   it "La billetera de Pepe cuenta con 10 monedas" $ dinero pepe `shouldBe` 10
-   it "La billetera de Pepe, luego de su cierre, cuenta con 0 monedas." $ dinero (cerrarCuenta(pepe)) `shouldBe` 0
-   it "La billetera de Pepe, luego de depositarle 15, extrarle 2 y un upgrade, cuenta con 27,6 monedas." $ dinero((upgrade.extraer(-2).depositar(15)) pepe) `shouldBe` 27.6
+   it " 8- La billetera de Pepe cuenta con 10 monedas" $ dinero pepe `shouldBe` 10
+   it " 9- La billetera de Pepe, luego de su cierre, cuenta con 0 monedas." $ dinero (cerrarCuenta(pepe)) `shouldBe` 0
+   it "10- La billetera de Pepe, luego de depositarle 15, extrarle 2 y un upgrade, cuenta con 27,6 monedas." $ dinero((upgrade.extraer(-2).depositar(15)) pepe) `shouldBe` 27.6
   describe "Testings de las transacciones aplicadas a Pepe y Lucho:" $ do
-   it "Se aplica la transaccion uno a Pepe, su billetera cuenta con 10 monedas." $ dinero (transaccionUno pepe) `shouldBe` 10
-   it "Se aplica la transaccion dos a Pepe, su billetera cuenta con 15 monedas." $ dinero (transaccionDos pepe) `shouldBe` 15
-   it "Se aplica la transaccion dos a Pepe 2 (quien cuenta con 20 monedas), su billetera cuenta con 25 monedas." $ dinero(transaccionDos(pepe2)) `shouldBe` 25
-   it "Se aplica la transaccion dos a Pepe 3 (quien cuenta con 50 monedas), su billetera cuenta con 55." $ dinero(transaccionDos(pepe3)) `shouldBe` 55
+   it "11- Se aplica la transaccion uno a Pepe y el resultado se aplica a una billetera con 20 monedas, quedando igual." $ dinero ((transaccionUno pepe) (Billetera "Una Billetera De 20" 20)) `shouldBe` 20
+   it "12- Se aplica la transaccion dos a Pepe y el resultado se aplica a una billetera con 10 monedas, quedando con 15 monedas." $ dinero ((transaccionDos pepe)(Billetera "Una Billetera De 10" 10)) `shouldBe` 15
+   it "13- Se aplica la transaccion dos a Pepe 2 (quien cuenta con 20 monedas) y el resultado se aplica a una billetera con 50 monedas, quedando con 55 monedas." $ dinero(transaccionDos(pepe2) (Billetera "Una Billetera De 50" 50)) `shouldBe` 55
   describe "Testings de nuevos eventos, modificando el dinero de la billetera de Lucho (su dinero ahora es de 10 monedas):" $ do
-   it "Se aplica la transaccion tres a Lucho, su billetera cuenta con 0 monedas." $ dinero(transaccionTres(nuevoDinero 10 lucho)) `shouldBe` 0
-   it "Se aplica la transaccion cuatro a Lucho, su billetera cuenta con 34 monedas." $ dinero((transaccionCuatro.nuevoDinero 10) lucho) `shouldBe` 34
+   it "14- Se aplica la transaccion tres a Lucho y el resultado se aplica a una billetera con 10 monedas, quedando con 0 monedas." $ dinero((transaccionTres lucho) (Billetera "Una Billetera De 10" 10)) `shouldBe` 0
+   it "15- Se aplica la transaccion cuatro a Lucho y el resultado se aplica a una billetera con 10 monedas,quedando con 34 monedas." $ dinero((transaccionCuatro lucho) (Billetera "Una Billetera De 10" 10)) `shouldBe` 34
   describe "Testings de pago entre usuarios:" $ do
-   it "Se aplica la transaccion cinco en Pepe, su billetera cuenta con 3 monedas." $ dinero(transaccionCinco pepe) `shouldBe` 3
-   it "Se aplica la transaccion cinco a Lucho, su billeter cuenta con 17." $ dinero((transaccionCinco.nuevoDinero 10) lucho) `shouldBe` 17
+   it "16- Se aplica la transaccion cinco en Pepe y el resultado se aplica en una billetera de 10 monedas, quedando con 3 monedas." $ dinero((transaccionCinco pepe) (Billetera "Una Billetera De 10" 10)) `shouldBe` 3
+   it "17- Se aplica la transaccion cinco a Lucho y el resultado se aplica en una billetera de 10 monedas, quedando con 17 monedas." $ dinero((transaccionCinco lucho)(Billetera "Una Billetera De 10" 10)) `shouldBe` 17
 
 
-type Evento = Billetera -> Billetera
+--------------------
+--    EVENTOS     --
+--------------------
 
+sinDinero :: Evento
 sinDinero billetera = billetera { dinero = 0 }
 
 nuevoDinero :: Float -> Evento
@@ -58,31 +73,11 @@ extraer dineroExtraido billetera
   | dinero billetera + dineroExtraido <=0 = sinDinero billetera
   | otherwise = billetera { dinero = (dinero billetera + dineroExtraido)}
 
-
+upgrade :: Evento
 upgrade billetera = billetera {dinero = (dinero billetera + (min) 10 (0.20 * dinero billetera))}
-
 
 cerrarCuenta :: Evento
 cerrarCuenta billetera = sinDinero billetera
-
-quedaIgual ::Evento
-quedaIgual billetera = billetera
-
-transaccionUno :: Evento
-transaccionUno billetera | nombre billetera == "Luciano" =  cerrarCuenta billetera
-                         | otherwise = quedaIgual billetera
-
-transaccionDos :: Evento
-transaccionDos billetera | nombre billetera == "José" =  (depositar 5) billetera
-                         | otherwise = quedaIgual billetera
-
-{-
-type Transaccion = String -> Evento -> Evento
-
-transaccion :: Transaccion
-transaccion nombreAComparar eventoAAplicar billeteraAfectada | nombre billeteraAfectada == nombreAComparar = eventoAAplicar billeteraAfectada
-                                                             | otherwise = quedaIgual billeteraAfectada
--}
 
 tocoYMeVoy :: Evento
 tocoYMeVoy billetera = (cerrarCuenta . upgrade . depositar 15) billetera
@@ -90,15 +85,38 @@ tocoYMeVoy billetera = (cerrarCuenta . upgrade . depositar 15) billetera
 ahorranteErrante :: Evento
 ahorranteErrante billetera = (depositar 10 . upgrade . depositar 8 . extraer (-1) . depositar 2 . depositar 1) billetera
 
+quedaIgual ::Evento
+quedaIgual billetera = billetera
 
-transaccionTres :: Evento
-transaccionTres billetera | nombre billetera == "Luciano" =  tocoYMeVoy billetera
-                          | otherwise = quedaIgual billetera
+--------------------
+-- TRANSFERENCIAS --
+--------------------
 
-transaccionCuatro :: Evento
-transaccionCuatro billetera | nombre billetera == "Luciano" =  ahorranteErrante billetera
-                            | otherwise = quedaIgual billetera
+transaccionUno :: Billetera -> Evento
+transaccionUno billetera | nombre billetera == "Luciano" =  cerrarCuenta
+                         | otherwise = quedaIgual
 
-transaccionCinco billetera | nombre billetera == "José"    = extraer (-7) billetera
-                           | nombre billetera == "Luciano" = depositar (7) billetera
-                           | otherwise                     = quedaIgual billetera
+transaccionDos :: Billetera -> Evento
+transaccionDos billetera | nombre billetera == "Jose" =  (depositar 5)
+                         | otherwise = quedaIgual
+
+transaccionTres :: Billetera -> Evento
+transaccionTres billetera | nombre billetera == "Luciano" =  tocoYMeVoy
+                          | otherwise = quedaIgual
+
+transaccionCuatro :: Billetera -> Evento
+transaccionCuatro billetera | nombre billetera == "Luciano" =  ahorranteErrante
+                            | otherwise = quedaIgual
+
+transaccionCinco :: Billetera -> Evento
+transaccionCinco billetera | nombre billetera == "Jose"    = extraer (-7)
+                           | nombre billetera == "Luciano" = depositar (7)
+                           | otherwise                     = quedaIgual
+
+---------------------------
+-- TRANSACCION ESCALABLE --
+---------------------------
+
+transaccion :: String -> Evento -> Billetera -> Evento
+transaccion nombreAComparar eventoAAplicar billeteraAComparar | nombre billeteraAComparar == nombreAComparar = eventoAAplicar
+                                                              | otherwise = quedaIgual
