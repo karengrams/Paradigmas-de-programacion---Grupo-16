@@ -113,12 +113,16 @@ transaccionCinco nombreAExtraer nombreADepositar billetera | nombre billetera ==
                                                            | nombre billetera == nombreADepositar  = depositar (7)
                                                            | otherwise                             = quedaIgual
 
----------------------------
--- TRANSACCION ESCALABLE --
----------------------------
+------------------------------
+-- TRANSACCIONES ESCALABLES --
+------------------------------
 
 transaccion :: String -> Evento -> Billetera -> Evento
 transaccion nombreAComparar eventoAAplicar billeteraAComparar | nombre billeteraAComparar == nombreAComparar = eventoAAplicar
                                                               | otherwise                                    = quedaIgual
 
-
+transferencia :: String -> String -> Float -> Billetera -> Evento
+transferencia nombreEmisor nombreDestinatario montoADepositar billeteraAComparar | montoADepositar < 0                             = error "No se puede transferir un monto negativo"
+                                                                                 | nombre billeteraAComparar == nombreEmisor       = extraer (-montoADepositar)
+                                                                                 | nombre billeteraAComparar == nombreDestinatario = depositar (montoADepositar)
+                                                                                 | otherwise                                       = quedaIgual
