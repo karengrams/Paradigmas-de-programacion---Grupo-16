@@ -89,7 +89,7 @@ quedaIgual ::Evento
 quedaIgual billetera = billetera
 
 --------------------
--- TRANSFERENCIAS --
+-- TRANSACCIONES  --
 --------------------
 
 transaccionUno :: String -> Billetera -> Evento
