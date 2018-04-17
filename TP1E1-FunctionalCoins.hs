@@ -15,6 +15,7 @@ dinero :: Float
 } deriving (Show, Eq)
 
 type Evento = Billetera -> Billetera
+type Transaccion = Billetera -> Evento
 
 --------------------
 --  BILLETERAS    --
