@@ -130,8 +130,8 @@ transaccion nombreAComparar eventoAAplicar billeteraAComparar | nombre billetera
                                                               | otherwise                                    = quedaIgual
 
 transferencia :: String -> String -> Float -> Billetera -> Evento
-transferencia nombreEmisor nombreDestinatario montoADepositar billeteraAComparar | montoADepositar < 0 = error "No se puede depositar un monto negativo"
-                                                                                 | nombre billeteraAComparar == nombreEmisor = extraer (montoADepositar)
+transferencia nombreEmisor nombreDestinatario montoADepositar billeteraAComparar | montoADepositar < 0                             = error "No se puede depositar un monto negativo"
+                                                                                 | nombre billeteraAComparar == nombreEmisor       = extraer (montoADepositar)
                                                                                  | nombre billeteraAComparar == nombreDestinatario = depositar (montoADepositar)
-                                                                                 | otherwise = quedaIgual
+                                                                                 | otherwise                                       = quedaIgual
 
