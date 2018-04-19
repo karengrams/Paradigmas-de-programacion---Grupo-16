@@ -10,12 +10,15 @@ import Data.Maybe
 import Test.Hspec
 
 type Dinero = Float
-type Billetera = Dinero
+type SaldoBilletera = Dinero
 type Nombre = String
-type Evento = Billetera -> Billetera
-type Transaccion = Usuario -> Evento
+type Evento = SaldoBilletera -> SaldoBilletera
+type Operacion = Usuario -> Evento
 
-data Usuario = Usuario {nombre :: String, billetera :: Billetera} deriving (Show, Eq)
+data Usuario = Usuario {
+nombre :: String,
+saldoBilletera :: SaldoBilletera
+} deriving (Show, Eq)
 
 
 --------------------
@@ -41,9 +44,9 @@ probarFunciones = hspec $ do
    it " 6- La billetera cuenta con 10 monedas." $ do quedaIgual 10 `shouldBe` 10
    it " 7- Luego de depositar 1000 monedas y realizarle un upgrade, la billetera cuenta con 1020 monedas." $ (upgrade.depositar 1000) 10 `shouldBe` 1020
   describe "Testings de las operaciones aplicados a las billeteras de Lucho y Pepe:" $ do
-   it " 8- La billetera de Pepe cuenta con 10 monedas" $ billetera pepe `shouldBe` 10
-   it " 9- La billetera de Pepe, luego de su cierre, cuenta con 0 monedas." $ (cerrarCuenta.billetera) pepe `shouldBe` 0
-   it "10- La billetera de Pepe, luego de depositarle 15, extrarle 2 y un upgrade, cuenta con 27,6 monedas." $ (upgrade.extraer(2).depositar(15).billetera) pepe `shouldBe` 27.6
+   it " 8- La billetera de Pepe cuenta con 10 monedas" $ saldoBilletera pepe `shouldBe` 10
+   it " 9- La billetera de Pepe, luego de su cierre, cuenta con 0 monedas." $ (cerrarCuenta.saldoBilletera) pepe `shouldBe` 0
+   it "10- La billetera de Pepe, luego de depositarle 15, extrarle 2 y un upgrade, cuenta con 27,6 monedas." $ (upgrade.extraer(2).depositar(15).saldoBilletera) pepe `shouldBe` 27.6
   describe "Testings de las transacciones aplicadas a Pepe y Lucho:" $ do
    it "11- Se aplica la transaccion uno a Pepe y el resultado se aplica a una billetera con 20 monedas, quedando igual." $ transaccion "Luciano" cerrarCuenta pepe 20 `shouldBe` 20
    it "12- Se aplica la transaccion dos a Pepe y el resultado se aplica a una billetera con 10 monedas, quedando con 15 monedas." $ transaccion "Jose" (depositar 5) pepe 10 `shouldBe` 15
@@ -70,7 +73,7 @@ extraer :: Dinero -> Evento
 extraer dineroExtraido billetera = (max) 0 (billetera - dineroExtraido)
 
 upgrade :: Evento
-upgrade billetera = billetera + (min) 10 (0.20 * billetera)
+upgrade saldoBilletera = saldoBilletera + (min) 10 (0.20 * saldoBilletera)
 
 cerrarCuenta :: Evento
 cerrarCuenta _ = 0
@@ -79,10 +82,10 @@ tocoYMeVoy :: Evento
 tocoYMeVoy = (cerrarCuenta . upgrade . depositar 15)
 
 ahorranteErrante :: Evento
-ahorranteErrante = (depositar 10 . upgrade . depositar 8 . extraer (1) . depositar 2 . depositar 1) 
+ahorranteErrante = (depositar 10 . upgrade . depositar 8 . extraer 1 . depositar 2 . depositar 1) 
 
 quedaIgual :: Evento
-quedaIgual billetera = billetera
+quedaIgual saldoBilletera = saldoBilletera
 
 --------------------
 -- TRANSACCIONES  --
@@ -102,15 +105,21 @@ transaccionCinco  = transferencia "Jose" "Luciano" 5
 validacion :: Nombre -> Usuario -> Bool
 validacion nombreAComparar (Usuario nombre _ ) = nombreAComparar == nombre
 
-transaccion :: Nombre -> Evento -> Usuario -> Evento
+transaccion :: Nombre -> Evento -> Operacion
 transaccion nombreAComparar eventoAAplicar usuario | validacion nombreAComparar usuario = eventoAAplicar
                                                    | otherwise                          = quedaIgual
 
-transferencia :: Nombre -> Nombre -> Dinero -> Usuario -> Evento
+-- Para sacar ese Nombre->Nombre, intente ponerle type NombreTransferencia = Nombre -> Nombre, y por alguna razon super loca la cual no entiendo, se rompe.
+
+-- type NombreTransferencia = Nombre -> Nombre
+
+transferencia :: Nombre -> Nombre -> Dinero -> Operacion
 transferencia nombreEmisor nombreDestinatario montoAPagar usuario | montoAPagar < 0                       = error "No se puede depositar un monto negativo"
                                                                   | validacion nombreEmisor usuario       = transaccion nombreEmisor (extraer montoAPagar) usuario
                                                                   | validacion nombreDestinatario usuario = transaccion nombreDestinatario (depositar montoAPagar) usuario
                                                                   | otherwise                             = quedaIgual
+
+-- Las transacciones se aplican a usuarios,por ende, deben devolver un evento aplicable a un usuario. A la hora de aplicar uno, es decir, aplico una transaccion, genial, devuelvo el evento que tengo que aplicar, por pantalla, ¿no deberia devolver todo? 
 
 --------------
 -- IMPACTAR --
