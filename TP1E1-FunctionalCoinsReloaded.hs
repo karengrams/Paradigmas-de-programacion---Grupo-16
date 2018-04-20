@@ -91,11 +91,20 @@ quedaIgual saldoBilletera = saldoBilletera
 -- TRANSACCIONES  --
 --------------------
 
+transaccionUno :: Operacion
 transaccionUno    = transaccion "Luciano" cerrarCuenta
+
+transaccionDos :: Operacion
 transaccionDos    = transaccion "Jose" (depositar 5)
+
+transaccionTres :: Operacion
 transaccionTres   = transaccion "Luciano" tocoYMeVoy
+
+transaccionCuantro :: Operacion
 transaccionCuatro = transaccion "Luciano" ahorranteErrante
-transaccionCinco  = transferencia "Jose" "Luciano" 5
+
+transaccionCinco :: Operacion
+transaccionCinco  = transferencia "Jose" "Luciano" 7
 
 
 ------------------------------
