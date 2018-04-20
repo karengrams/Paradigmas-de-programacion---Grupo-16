@@ -130,8 +130,32 @@ transferencia nombreEmisor nombreDestinatario montoAPagar usuario | montoAPagar 
 
 -- Las transacciones se aplican a usuarios,por ende, deben devolver un evento aplicable a un usuario. A la hora de aplicar uno, es decir, aplico una transaccion, genial, devuelvo el evento que tengo que aplicar, por pantalla, ¿no deberia devolver todo? 
 
+
+
+
+--PARTE 2--
+
 --------------
 -- IMPACTAR --
----------------
+--------------
+
+bloqueUno = [transaccionUno, transaccionDos, transaccionDos, transaccionDos, transaccionTres, transaccionCuatro, transaccionCinco, transaccionTres]
+bloqueDos = [transaccionDos, transaccionDos, transaccionDos, transaccionDos, transaccionDos]
 
 impactar transaccionAImpactar (Usuario nombre billetera ) = Usuario nombre (transaccionAImpactar (Usuario nombre billetera) billetera)
+
+impactarBloque [] usuario = usuario
+impactarBloque (cabezaBloques:colaBloques) usuario = impactarBloque colaBloques (impactar cabezaBloques usuario)
+
+quienesQuedanConAlMenos _ _ [] = []
+quienesQuedanConAlMenos saldoMinimo bloqueAAplicar (cabezaUsuarios:colaUsuarios) | billetera (impactarBloque bloqueAAplicar cabezaUsuarios) >= saldoMinimo = cabezaUsuarios : quienesQuedanConAlMenos saldoMinimo bloqueAAplicar colaUsuarios
+                                                                                 | otherwise                                                               = quienesQuedanConAlMenos saldoMinimo bloqueAAplicar (cabezaUsuarios:colaUsuarios)
+
+
+elMasAdineradoLuegoDeBloque _ [unicoUsuarioEnLista] = unicoUsuarioEnLista
+elMasAdineradoLuegoDeBloque bloqueAAplicar (primeroUsuarios:segundoUsuarios:colaUsuarios) | billetera (impactarBloque bloqueAAplicar primeroUsuarios) >= billetera( impactarBloque bloqueAAplicar segundoUsuarios) = elMasAdineradoLuegoDeBloque bloqueAAplicar (primeroUsuarios:colaUsuarios)
+                                                                                          | otherwise                                                                                                              = elMasAdineradoLuegoDeBloque bloqueAAplicar (segundoUsuarios:colaUsuarios)
+
+elMenosAdineradoLuegoDeBloque _ [unicoUsuarioEnLista] = unicoUsuarioEnLista
+elMenosAdineradoLuegoDeBloque bloqueAAplicar (primeroUsuarios:segundoUsuarios:colaUsuarios) | billetera (impactarBloque bloqueAAplicar primeroUsuarios) <= billetera( impactarBloque bloqueAAplicar segundoUsuarios) = elMenosAdineradoLuegoDeBloque bloqueAAplicar (primeroUsuarios:colaUsuarios)
+                                                                                          | otherwise                                                                                                                = elMenosAdineradoLuegoDeBloque bloqueAAplicar (segundoUsuarios:colaUsuarios)
