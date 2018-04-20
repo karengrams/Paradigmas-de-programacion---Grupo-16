@@ -100,7 +100,7 @@ transaccionDos    = transaccion "Jose" (depositar 5)
 transaccionTres :: Operacion
 transaccionTres   = transaccion "Luciano" tocoYMeVoy
 
-transaccionCuantro :: Operacion
+transaccionCuatro :: Operacion
 transaccionCuatro = transaccion "Luciano" ahorranteErrante
 
 transaccionCinco :: Operacion
@@ -134,4 +134,4 @@ transferencia nombreEmisor nombreDestinatario montoAPagar usuario | montoAPagar 
 -- IMPACTAR --
 ---------------
 
-impactar eventoAImpactar (Usuario nombre billetera ) = Usuario nombre (eventoAImpactar billetera)
+impactar transaccionAImpactar (Usuario nombre billetera ) = Usuario nombre (transaccionAImpactar (Usuario nombre billetera) billetera)
