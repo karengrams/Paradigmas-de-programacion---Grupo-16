@@ -9,22 +9,26 @@ import Data.List
 import Data.Maybe 
 import Test.Hspec
 
-data Billetera = Billetera {
+type Dinero = Float
+type SaldoBilletera = Dinero
+type Nombre = String
+type Evento = SaldoBilletera -> SaldoBilletera
+type Operacion = Usuario -> Evento
+
+data Usuario = Usuario {
 nombre :: String,
-dinero :: Float
+saldoBilletera :: SaldoBilletera
 } deriving (Show, Eq)
 
-type Evento = Billetera -> Billetera
-type Transaccion = Billetera -> Evento
 
 --------------------
---  BILLETERAS    --
+--  USUARIOS    --
 --------------------
 
-pepe = Billetera "Jose" 10 
-pepe2 = Billetera "Jose" 20
-pepe3 = Billetera "Jose" 50
-lucho = Billetera "Luciano" 2
+pepe = Usuario "Jose" 10 
+pepe2 = Usuario "Jose" 20
+pepe3 = Usuario "Jose" 50
+lucho = Usuario "Luciano" 2
 
 --------------------
 --    TESTING     --
@@ -32,106 +36,84 @@ lucho = Billetera "Luciano" 2
 
 probarFunciones = hspec $ do
   describe "Testings aplicados a una billetera de 10 monedas:" $ do
-   it " 1- Despues de depositarle 10 monedas, la billetera cuenta con 20 monedas." $ dinero (depositar 10 (Billetera "Una Billetera De 10" 10)) `shouldBe` 20 
-   it " 2- Despues de extraer 3 monedas, la billetera cuenta con 7 monedas." $ dinero (extraer (3) (Billetera "Una Billetera De 10" 10)) `shouldBe` 7
-   it " 3- Despues de extraer 15 monedas, la billetera cuenta con 0 monedas." $ dinero(extraer (15) (Billetera "Una Billetera De 10" 10)) `shouldBe` 0
-   it " 4- Despues de un upgrade, la billetera cuenta con 12 monedas." $ dinero (upgrade (Billetera "Una Billetera De 10" 10)) `shouldBe` 12
-   it " 5- Cuando se cierra la cuenta, la billetera cuenta con 0 monedas." $ dinero (cerrarCuenta (Billetera "Una Billetera De 10" 10)) `shouldBe` 0
-   it " 6- La billetera cuenta con 10 monedas." $ do dinero(quedaIgual((Billetera "Una Billetera De 10" 10))) `shouldBe` 10
-   it " 7- Luego de depositar 1000 monedas y realizarle un upgrade, la billetera cuenta con 1020 monedas." $ dinero((upgrade.depositar (1000)) (Billetera "Una Billetera De 10" 10)) `shouldBe` 1020
+   it " 1- Despues de depositarle 10 monedas, la billetera cuenta con 20 monedas." $ depositar 10 10 `shouldBe` 20 
+   it " 2- Despues de extraer 3 monedas, la billetera cuenta con 7 monedas." $ extraer 3 10 `shouldBe` 7
+   it " 3- Despues de extraer 15 monedas, la billetera cuenta con 0 monedas." $ extraer 15 10 `shouldBe` 0
+   it " 4- Despues de un upgrade, la billetera cuenta con 12 monedas." $ upgrade 10 `shouldBe` 12
+   it " 5- Cuando se cierra la cuenta, la billetera cuenta con 0 monedas." $ cerrarCuenta 10 `shouldBe` 0
+   it " 6- La billetera cuenta con 10 monedas." $ do quedaIgual 10 `shouldBe` 10
+   it " 7- Luego de depositar 1000 monedas y realizarle un upgrade, la billetera cuenta con 1020 monedas." $ (upgrade.depositar 1000) 10 `shouldBe` 1020
   describe "Testings de las operaciones aplicados a las billeteras de Lucho y Pepe:" $ do
-   it " 8- La billetera de Pepe cuenta con 10 monedas" $ dinero pepe `shouldBe` 10
-   it " 9- La billetera de Pepe, luego de su cierre, cuenta con 0 monedas." $ dinero (cerrarCuenta(pepe)) `shouldBe` 0
-   it "10- La billetera de Pepe, luego de depositarle 15, extrarle 2 y un upgrade, cuenta con 27,6 monedas." $ dinero((upgrade.extraer(2).depositar(15)) pepe) `shouldBe` 27.6
+   it " 8- La billetera de Pepe cuenta con 10 monedas" $ saldoBilletera pepe `shouldBe` 10
+   it " 9- La billetera de Pepe, luego de su cierre, cuenta con 0 monedas." $ (cerrarCuenta.saldoBilletera) pepe `shouldBe` 0
+   it "10- La billetera de Pepe, luego de depositarle 15, extrarle 2 y un upgrade, cuenta con 27,6 monedas." $ (upgrade.extraer(2).depositar(15).saldoBilletera) pepe `shouldBe` 27.6
   describe "Testings de las transacciones aplicadas a Pepe y Lucho:" $ do
-   it "11- Se aplica la transaccion uno a Pepe y el resultado se aplica a una billetera con 20 monedas, quedando igual." $ dinero ((transaccion "Luciano" cerrarCuenta pepe) (Billetera "Una Billetera De 20" 20)) `shouldBe` 20
-   it "12- Se aplica la transaccion dos a Pepe y el resultado se aplica a una billetera con 10 monedas, quedando con 15 monedas." $ dinero ((transaccion "Jose" (depositar 5) pepe)(Billetera "Una Billetera De 10" 10)) `shouldBe` 15
-   it "13- Se aplica la transaccion dos a Pepe 2 (quien cuenta con 20 monedas) y el resultado se aplica a una billetera con 50 monedas, quedando con 55 monedas." $ dinero((transaccion "Jose" (depositar 5) (pepe2)) (Billetera "Una Billetera De 50" 50)) `shouldBe` 55
+   it "11- Se aplica la transaccion uno a Pepe y el resultado se aplica a una billetera con 20 monedas, quedando igual." $ transaccion "Luciano" cerrarCuenta pepe 20 `shouldBe` 20
+   it "12- Se aplica la transaccion dos a Pepe y el resultado se aplica a una billetera con 10 monedas, quedando con 15 monedas." $ transaccion "Jose" (depositar 5) pepe 10 `shouldBe` 15
+   it "13- Se aplica la transaccion dos a Pepe 2 (quien cuenta con 20 monedas) y el resultado se aplica a una billetera con 50 monedas, quedando con 55 monedas." $ transaccion "Jose" (depositar 5) pepe2 50 `shouldBe` 55
   describe "Testings de nuevos eventos, modificando el dinero de la billetera de Lucho (su dinero ahora es de 10 monedas):" $ do
-   it "14- Se aplica la transaccion tres a Lucho y el resultado se aplica a una billetera con 10 monedas, quedando con 0 monedas." $ dinero((transaccion "Luciano" tocoYMeVoy lucho) (Billetera "Una Billetera De 10" 10)) `shouldBe` 0
-   it "15- Se aplica la transaccion cuatro a Lucho y el resultado se aplica a una billetera con 10 monedas,quedando con 34 monedas." $ dinero((transaccion "Luciano" ahorranteErrante lucho) (Billetera "Una Billetera De 10" 10)) `shouldBe` 34
+   it "14- Se aplica la transaccion tres a Lucho y el resultado se aplica a una billetera con 10 monedas, quedando con 0 monedas." $ transaccion "Luciano" tocoYMeVoy lucho 10 `shouldBe` 0
+   it "15- Se aplica la transaccion cuatro a Lucho y el resultado se aplica a una billetera con 10 monedas,quedando con 34 monedas." $ transaccion "Luciano" ahorranteErrante lucho 10 `shouldBe` 34
   describe "Testings de pago entre usuarios:" $ do
-   it "16- Se aplica la transaccion cinco en Pepe y el resultado se aplica en una billetera de 10 monedas, quedando con 3 monedas." $ dinero((transferencia "Jose" "Luciano" 7 pepe) (Billetera "Una Billetera De 10" 10)) `shouldBe` 3
-   it "17- Se aplica la transaccion cinco a Lucho y el resultado se aplica en una billetera de 10 monedas, quedando con 17 monedas." $ dinero((transferencia "Jose" "Luciano" 7 lucho) (Billetera "Una Billetera De 10" 10)) `shouldBe` 17
+   it "16- Se aplica la transaccion cinco en Pepe y el resultado se aplica en una billetera de 10 monedas, quedando con 3 monedas." $ transferencia "Jose" "Luciano" 7 pepe 10 `shouldBe` 3
+   it "17- Se aplica la transaccion cinco a Lucho y el resultado se aplica en una billetera de 10 monedas, quedando con 17 monedas." $ transferencia "Jose" "Luciano" 7 lucho 10 `shouldBe` 17
 
 
 --------------------
 --    EVENTOS     --
 --------------------
 
-sinDinero :: Evento
-sinDinero billetera = billetera { dinero = 0 }
+nuevoDinero :: Evento
+nuevoDinero nuevoMonto = nuevoMonto
 
-nuevoDinero :: Float -> Evento
-nuevoDinero nuevoMonto billetera = billetera { dinero = nuevoMonto }
+depositar :: Dinero -> Evento
+depositar dineroDepositado = (+) dineroDepositado
 
-depositar :: Float -> Evento
-depositar dineroDepositado billetera = billetera {dinero = (dinero billetera + dineroDepositado)}
-
-extraer :: Float -> Evento
-extraer dineroExtraido billetera
-  | dinero billetera - dineroExtraido <=0  = sinDinero billetera
-  | otherwise                              = billetera { dinero = (dinero billetera - dineroExtraido)}
+extraer :: Dinero -> Evento
+extraer dineroExtraido billetera = (max) 0 (billetera - dineroExtraido)
 
 upgrade :: Evento
-upgrade billetera = billetera {dinero = (dinero billetera + (min) 10 (0.20 * dinero billetera))}
+upgrade saldoBilletera = saldoBilletera + (min) 10 (0.20 * saldoBilletera)
 
 cerrarCuenta :: Evento
-cerrarCuenta billetera = sinDinero billetera
+cerrarCuenta _ = 0
 
 tocoYMeVoy :: Evento
-tocoYMeVoy billetera = (cerrarCuenta . upgrade . depositar 15) billetera
+tocoYMeVoy = (cerrarCuenta . upgrade . depositar 15)
 
 ahorranteErrante :: Evento
-ahorranteErrante billetera = (depositar 10 . upgrade . depositar 8 . extraer (1) . depositar 2 . depositar 1) billetera
+ahorranteErrante = (depositar 10 . upgrade . depositar 8 . extraer 1 . depositar 2 . depositar 1) 
 
-quedaIgual ::Evento
-quedaIgual billetera = billetera
+quedaIgual :: Evento
+quedaIgual saldoBilletera = saldoBilletera
 
 --------------------
 -- TRANSACCIONES  --
 --------------------
 
-{-
-transaccionUno :: String -> Billetera -> Evento
-transaccionUno nombreAComparar billetera | nombre billetera == nombreAComparar =  cerrarCuenta
-                                         | otherwise                           = quedaIgual
+transaccionUno    = transaccion "Luciano" cerrarCuenta
+transaccionDos    = transaccion "Jose" (depositar 5)
+transaccionTres   = transaccion "Luciano" tocoYMeVoy
+transaccionCuatro = transaccion "Luciano" ahorranteErrante
+transaccionCinco  = transferencia "Jose" "Luciano" 5
 
-transaccionDos :: String -> Billetera -> Evento
-transaccionDos nombreAComparar billetera | nombre billetera == nombreAComparar =  (depositar 5)
-                                         | otherwise                           = quedaIgual
-
-
-transaccionTres :: String -> Billetera -> Evento
-transaccionTres nombreAComparar billetera | nombre billetera == nombreAComparar =  tocoYMeVoy
-                                          | otherwise                           = quedaIgual
-
-transaccionCuatro :: String -> Billetera -> Evento
-transaccionCuatro nombreAComparar billetera | nombre billetera == nombreAComparar =  ahorranteErrante
-                                            | otherwise                           = quedaIgual
-
-
-
-transaccionCinco :: String -> String -> Billetera -> Evento
-transaccionCinco nombreAExtraer nombreADepositar billetera | nombre billetera == nombreAExtraer    = extraer (7)
-                                                           | nombre billetera == nombreADepositar  = depositar (7)
-                                                           | otherwise                             = quedaIgual
-
--}
-
--- Las transacciones las cuales se encuentran comentadas, son exactamente iguales a las que se encuentran abajo, la unica diferencia es que no se debe separar los casos, ya que se repetiria la logica.
 
 ------------------------------
 -- TRANSACCIONES ESCALABLES --
 ------------------------------
 
-transaccion :: String -> Evento -> Billetera -> Evento
-transaccion nombreAComparar eventoAAplicar billeteraAComparar | nombre billeteraAComparar == nombreAComparar = eventoAAplicar
-                                                              | otherwise                                    = quedaIgual
+transaccion :: Nombre -> Evento -> Operacion
+transaccion nombreAComparar eventoAAplicar usuario | validacion nombreAComparar usuario = eventoAAplicar
+                                                   | otherwise                          = quedaIgual
 
-transferencia :: String -> String -> Float -> Billetera -> Evento
-transferencia nombreEmisor nombreDestinatario montoADepositar billeteraAComparar | montoADepositar < 0                             = error "No se puede depositar un monto negativo"
-                                                                                 | nombre billeteraAComparar == nombreEmisor       = extraer (montoADepositar)
-                                                                                 | nombre billeteraAComparar == nombreDestinatario = depositar (montoADepositar)
-                                                                                 | otherwise                                       = quedaIgual
+transferencia :: Nombre -> Nombre -> Dinero -> Operacion
+transferencia nombreEmisor nombreDestinatario montoAPagar usuario | montoAPagar < 0                       = error "No se puede depositar un monto negativo"
+                                                                  | validacion nombreEmisor usuario       = transaccion nombreEmisor (extraer montoAPagar) usuario
+                                                                  | validacion nombreDestinatario usuario = transaccion nombreDestinatario (depositar montoAPagar) usuario
+                                                                  | otherwise                             = quedaIgual
 
+--------------
+-- IMPACTAR --
+---------------
+
+impactar eventoAImpactar (Usuario nombre billetera ) = Usuario nombre (eventoAImpactar billetera)
