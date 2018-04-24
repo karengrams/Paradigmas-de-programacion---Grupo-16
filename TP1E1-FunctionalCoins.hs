@@ -11,12 +11,12 @@ import Test.Hspec
 
 type Dinero = Float
 type SaldoBilletera = Dinero
-type Nombre = String
+type Identificador = String
 type Evento = SaldoBilletera -> SaldoBilletera
 type Operacion = Usuario -> Evento
 
 data Usuario = Usuario {
-nombre :: String,
+identificador :: String,
 saldoBilletera :: SaldoBilletera
 } deriving (Show, Eq)
 
@@ -102,18 +102,23 @@ transaccionCinco  = transferencia "Jose" "Luciano" 5
 -- TRANSACCIONES ESCALABLES --
 ------------------------------
 
-transaccion :: Nombre -> Evento -> Operacion
-transaccion nombreAComparar eventoAAplicar usuario | validacion nombreAComparar usuario = eventoAAplicar
+transaccion :: Identificador -> Evento -> Operacion
+transaccion identificadorAComparar eventoAAplicar usuario | validacion identificadorAComparar usuario = eventoAAplicar
                                                    | otherwise                          = quedaIgual
 
-transferencia :: Nombre -> Nombre -> Dinero -> Operacion
-transferencia nombreEmisor nombreDestinatario montoAPagar usuario | montoAPagar < 0                       = error "No se puede depositar un monto negativo"
-                                                                  | validacion nombreEmisor usuario       = transaccion nombreEmisor (extraer montoAPagar) usuario
-                                                                  | validacion nombreDestinatario usuario = transaccion nombreDestinatario (depositar montoAPagar) usuario
+transferencia :: Identificador -> Identificador -> Dinero -> Operacion
+transferencia identificadorEmisor identificadorDestinatario montoAPagar usuario | montoAPagar < 0                       = error "No se puede depositar un monto negativo"
+                                                                  | validacion identificadorEmisor usuario       = transaccion identificadorEmisor (extraer montoAPagar) usuario
+                                                                  | validacion identificadorDestinatario usuario = transaccion identificadorDestinatario (depositar montoAPagar) usuario
                                                                   | otherwise                             = quedaIgual
+
+validacion :: Identificador -> Usuario -> Bool
+validacion identificadorAComparar (Usuario identificador _ ) = identificadorAComparar == identificador
+ 
+ 
 
 --------------
 -- IMPACTAR --
 ---------------
 
-impactar eventoAImpactar (Usuario nombre billetera ) = Usuario nombre (eventoAImpactar billetera)
+impactar eventoAImpactar (Usuario identificador billetera ) = Usuario identificador (eventoAImpactar billetera)
