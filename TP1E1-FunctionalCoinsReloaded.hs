@@ -190,5 +190,6 @@ saldoHastaN limite unBlockChain usuario  = impactarBlockChain (take limite unBlo
 
 aplicacionDeBlockChainAUsuarios unBlockChain unaListaDeUsuarios  = map (impactarBlockChain unBlockChain) unaListaDeUsuarios
 
+blockChainInfinita unBloque = [unBloque]++(blockChainInfinita (unBloque++unBloque))
 
 
