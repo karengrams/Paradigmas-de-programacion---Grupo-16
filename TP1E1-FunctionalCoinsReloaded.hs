@@ -61,9 +61,9 @@ probarFunciones = hspec $ do
    it "16- Se aplica la transaccion cinco en Pepe y el resultado se aplica en una billetera de 10 monedas, quedando con 3 monedas." $ transferencia "Jose" "Luciano" 7 pepe 10 `shouldBe` 3
    it "17- Se aplica la transaccion cinco a Lucho y el resultado se aplica en una billetera de 10 monedas, quedando con 17 monedas." $ transferencia "Jose" "Luciano" 7 lucho 10 `shouldBe` 17
   describe "Segunda entrega nro. 2:" $ do
-   --it "18- "
-   --it "19- "
-   --it "20- "
+   it "18- Se le impacta la transaccion 1 a Pepe y deberia quedar igual." $ do impactar transaccionUno pepe `shouldBe` pepe
+   it "19- Se le impacta la transaccion 5 a Lucho y deberia tener una billetera de 9 monedas" $ do impactar transaccionCinco lucho `shouldBe` Usuario "Luciano" 9
+   it "20- Se le impacta la transaccion 5 y luego 2 a Pepe y deberia quedar con una billetera de 8 monedas." $ do ((impactar transaccionDos).(impactar transaccionCinco)) pepe `shouldBe` Usuario "Jose" 8
    it "21- Se aplica el bloque 1 a Pepe y el resultado es un usuario con una billetera de 18." $ impactarBloque bloqueUno pepe `shouldBe` Usuario "Jose" 18
    it "22- Se determina quienes son los usuarios con un saldo mayor a 10, se deberia mostrar a Pepe con su saldo original y no se deberia mostrar a Luciano." $ do quienesQuedanConAlMenos 10 bloqueUno [pepe,lucho] `shouldBe` [pepe]
    it "23- Se determina quien es el mas adinerado, aplicandole a una lista con Pepe y Lucho, quedaria Pepe." $ do elMasAdineradoLuegoDeBloque bloqueUno [lucho,pepe] `shouldBe` pepe
@@ -188,8 +188,13 @@ impactarBlockChain  (primerBloque:colaDeBloques) usuario  = impactarBlockChain c
 saldoHastaN :: Int -> [Bloque] -> Usuario -> Usuario
 saldoHastaN limite unBlockChain usuario  = impactarBlockChain (take limite unBlockChain) usuario
 
+aplicacionDeBlockChainAUsuarios:: BlockChain -> [Usuario] -> [Usuario]
 aplicacionDeBlockChainAUsuarios unBlockChain unaListaDeUsuarios  = map (impactarBlockChain unBlockChain) unaListaDeUsuarios
 
+-- Como hacemos que el filter corte porque no corta nunca.
 blockChainInfinita unBloque = [unBloque]++(blockChainInfinita (unBloque++unBloque))
+
+impactarBlockChainParcial usuario (unBloque:colaDeBloques) = (impactarBloque unBloque usuario:impactarBlockChainParcial usuario colaDeBloques)
+
 
 
