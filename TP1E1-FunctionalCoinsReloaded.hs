@@ -196,5 +196,5 @@ blockChainInfinita unBloque = [unBloque]++(blockChainInfinita (unBloque++unBloqu
 
 impactarBlockChainParcial usuario (unBloque:colaDeBloques) = (impactarBloque unBloque usuario:impactarBlockChainParcial usuario colaDeBloques)
 
-
+cuantosBloquesHacenFalta unaCantidad unBloque unUsuario = length(takeWhile (<=unaCantidad) (map saldoBilletera (impactarBlockChainParcial unUsuario (blockChainInfinita unBloque))))
 
