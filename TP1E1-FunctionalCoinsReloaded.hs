@@ -190,7 +190,7 @@ blockChainInfinita :: Bloque -> BlockChain
 blockChainInfinita unBloque = [unBloque]++(blockChainInfinita (unBloque++unBloque))
 
 impactarBlockChainParcial :: BlockChain -> Usuario -> [Usuario]
-impactarBlockChainParcial (cabezaBloque:colaDeBloques) usuario = (impactarBloque cabezaBloque usuario:impactarBlockChainParcial colaDeBloques usuario)
+impactarBlockChainParcial (cabezaBloque:colaDeBloques) usuario = (impactarBloque cabezaBloque usuario:impactarBlockChainParcial colaDeBloques (impactarBloque cabezaBloque usuario))
 
 cuantosBloquesHacenFalta :: SaldoBilletera -> Bloque -> Usuario -> Int
-cuantosBloquesHacenFalta unaCantidad unBloque = length. (takeWhile (<=unaCantidad)) . (map saldoBilletera) . (impactarBlockChainParcial (blockChainInfinita unBloque))
+cuantosBloquesHacenFalta unaCantidad unBloque = (+1). length. (takeWhile (<unaCantidad)) . (map saldoBilletera) . (impactarBlockChainParcial (blockChainInfinita unBloque))
