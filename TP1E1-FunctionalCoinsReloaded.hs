@@ -13,15 +13,12 @@ type Dinero = Float
 type SaldoBilletera = Dinero
 type Nombre = String
 type Evento = SaldoBilletera -> SaldoBilletera
-type Operacion = Usuario -> Evento
-type Bloque = [Usuario -> SaldoBilletera -> SaldoBilletera]
-type BlockChain = [Bloque]
+type Transaccion = Usuario -> Evento
 
 data Usuario = Usuario {
 nombre :: String,
 saldoBilletera :: SaldoBilletera
 } deriving (Show, Eq)
-
 
 --------------------
 --  USUARIOS    --
@@ -66,12 +63,13 @@ probarFunciones = hspec $ do
    it "20- Se le impacta la transaccion 5 y luego 2 a Pepe y deberia quedar con una billetera de 8 monedas." $ do ((impactar transaccionDos).(impactar transaccionCinco)) pepe `shouldBe` Usuario "Jose" 8
    it "21- Se aplica el bloque 1 a Pepe y el resultado es un usuario con una billetera de 18." $ impactarBloque bloqueUno pepe `shouldBe` Usuario "Jose" 18
    it "22- Se determina quienes son los usuarios con un saldo mayor a 10, se deberia mostrar a Pepe con su saldo original y no se deberia mostrar a Luciano." $ do quienesQuedanConAlMenos 10 bloqueUno [pepe,lucho] `shouldBe` [pepe]
-   it "23- Se determina quien es el mas adinerado, aplicandole a una lista con Pepe y Lucho, quedaria Pepe." $ do elMasAdineradoLuegoDeBloque bloqueUno [lucho,pepe] `shouldBe` pepe
-   it "24- Se determina quien es el menos adinerado, aplicandole a una lista con Pepe y Lucho, quedaria Lucho." $ do elMenosAdineradoLuegoDeBloque bloqueUno [lucho,pepe] `shouldBe` lucho
+   it "23- Se determina quien es el mas adinerado, aplicandole a una lista con Pepe y Lucho, quedaria Pepe." $ do quienEsQue (>=) bloqueUno [lucho,pepe] `shouldBe` pepe
+   it "24- Se determina quien es el menos adinerado, aplicandole a una lista con Pepe y Lucho, quedaria Lucho." $ do quienEsQue (<=) bloqueUno [lucho,pepe] `shouldBe` lucho
    it "25- Se determina cual es el peor bloque, aplicandolo a el BlockChain definido y a Pepe, deberia quedar Pepe con una billetera de 18." $ do impactarBloque (peorBloqueDelBlockChain pepe blockChain) pepe `shouldBe` Usuario "Jose" 18
    it "26- Se aplica el BlockChain definido a Pepe, deberia quedar Pepe con un saldo de 115." $ do impactarBlockChain blockChain pepe `shouldBe` Usuario "Jose" 115
    it "27- Se aplica el BlockChain hasta 3 a Pepe, deberia quedar Pepe con un saldo de 51." $ do  saldoHastaN 3 blockChain pepe `shouldBe` Usuario "Jose" 51
    it "28- Se aplica el BlockChain a Pepe y a Lucho, la sumatoria de sus saldos deberia ser de 115." $ do  (sum . map saldoBilletera) (aplicacionDeBlockChainAUsuarios blockChain [pepe,lucho]) `shouldBe` 115
+   it "29- Se aplica el BlockChain inifito a Pepe hasta que su saldo sea de 10.000 creditos y la cantidad de bloques aplicados deberian ser 11. " $ do cuantosBloquesHacenFalta 10000 bloqueUno pepe `shouldBe` 11
 
 --------------------
 --    EVENTOS     --
@@ -105,19 +103,19 @@ quedaIgual saldoBilletera = saldoBilletera
 -- TRANSACCIONES  --
 --------------------
 
-transaccionUno :: Operacion
-transaccionUno    = transaccion "Luciano" cerrarCuenta
+transaccionUno :: Transaccion
+transaccionUno  = transaccion "Luciano" cerrarCuenta
 
-transaccionDos :: Operacion
-transaccionDos    = transaccion "Jose" (depositar 5)
+transaccionDos :: Transaccion
+transaccionDos = transaccion "Jose" (depositar 5)
 
-transaccionTres :: Operacion
-transaccionTres   = transaccion "Luciano" tocoYMeVoy
+transaccionTres :: Transaccion
+transaccionTres = transaccion "Luciano" tocoYMeVoy
 
-transaccionCuatro :: Operacion
+transaccionCuatro :: Transaccion
 transaccionCuatro = transaccion "Luciano" ahorranteErrante
 
-transaccionCinco :: Operacion
+transaccionCinco :: Transaccion
 transaccionCinco  = transferencia "Jose" "Luciano" 7
 
 
@@ -128,11 +126,11 @@ transaccionCinco  = transferencia "Jose" "Luciano" 7
 validacion :: Nombre -> Usuario -> Bool
 validacion nombreAComparar (Usuario nombre _ ) = nombreAComparar == nombre
 
-transaccion :: Nombre -> Evento -> Operacion
+transaccion :: Nombre -> Evento -> Transaccion
 transaccion nombreAComparar eventoAAplicar usuario | validacion nombreAComparar usuario = eventoAAplicar
                                                    | otherwise                          = quedaIgual
 
-transferencia :: Nombre -> Nombre -> Dinero -> Operacion
+transferencia :: Nombre -> Nombre -> Dinero -> Transaccion
 transferencia nombreEmisor nombreDestinatario montoAPagar usuario | montoAPagar < 0                       = error "No se puede depositar un monto negativo"
                                                                   | validacion nombreEmisor usuario       = transaccion nombreEmisor (extraer montoAPagar) usuario
                                                                   | validacion nombreDestinatario usuario = transaccion nombreDestinatario (depositar montoAPagar) usuario
@@ -144,7 +142,9 @@ transferencia nombreEmisor nombreDestinatario montoAPagar usuario | montoAPagar 
 -- IMPACTAR --
 --------------
 
--- Sacar usuario
+type Bloque = [Transaccion]
+type BlockChain = [Bloque]
+type ComparacionDeSaldos = SaldoBilletera -> SaldoBilletera -> Bool
 
 bloqueUno:: Bloque
 bloqueUno = [transaccionUno, transaccionDos, transaccionDos, transaccionDos, transaccionTres, transaccionCuatro, transaccionCinco, transaccionTres]
@@ -155,46 +155,42 @@ bloqueDos = [transaccionDos, transaccionDos, transaccionDos, transaccionDos, tra
 blockChain:: BlockChain
 blockChain = [bloqueDos, bloqueUno, bloqueUno, bloqueUno, bloqueUno, bloqueUno, bloqueUno, bloqueUno, bloqueUno, bloqueUno, bloqueUno]
 
-
-impactar transaccionAImpactar (Usuario nombre billetera ) = Usuario nombre (transaccionAImpactar (Usuario nombre billetera) billetera)
+impactar transaccionAImpactar unUsuario = Usuario (nombre unUsuario) (transaccionAImpactar unUsuario (saldoBilletera unUsuario))
 
 impactarBloque :: Bloque -> Usuario -> Usuario
-impactarBloque [] usuario = usuario
-impactarBloque (cabezaBloques:colaBloques) usuario = impactarBloque colaBloques (impactar cabezaBloques usuario)
+impactarBloque [] usuario                         = usuario
+impactarBloque (cabezaBloque:colaBloques) usuario = impactarBloque colaBloques (impactar cabezaBloque usuario)
 
 
 quienesQuedanConAlMenos :: SaldoBilletera -> Bloque -> [Usuario] -> [Usuario]
 quienesQuedanConAlMenos _ _ [] = []
 quienesQuedanConAlMenos saldoMinimo bloqueAAplicar (cabezaUsuarios:colaUsuarios) | saldoBilletera (impactarBloque bloqueAAplicar cabezaUsuarios) > saldoMinimo = cabezaUsuarios : quienesQuedanConAlMenos saldoMinimo bloqueAAplicar colaUsuarios
-                                                                                 | otherwise                                                                    = quienesQuedanConAlMenos saldoMinimo bloqueAAplicar colaUsuarios
+                                                                                 | otherwise                                                                   = quienesQuedanConAlMenos saldoMinimo bloqueAAplicar colaUsuarios
 
-elMasAdineradoLuegoDeBloque :: Bloque -> [Usuario] -> Usuario
-elMasAdineradoLuegoDeBloque _ [unicoUsuarioEnLista] = unicoUsuarioEnLista
-elMasAdineradoLuegoDeBloque bloqueAAplicar (primeroUsuarios:segundoUsuarios:colaUsuarios) | saldoBilletera (impactarBloque bloqueAAplicar primeroUsuarios) >= saldoBilletera (impactarBloque bloqueAAplicar segundoUsuarios) = elMasAdineradoLuegoDeBloque bloqueAAplicar (primeroUsuarios:colaUsuarios)
-                                                                                          | otherwise                                                                                                                        = elMasAdineradoLuegoDeBloque bloqueAAplicar (segundoUsuarios:colaUsuarios)
-elMenosAdineradoLuegoDeBloque :: Bloque -> [Usuario] -> Usuario
-elMenosAdineradoLuegoDeBloque _ [unicoUsuarioEnLista] = unicoUsuarioEnLista
-elMenosAdineradoLuegoDeBloque bloqueAAplicar (primeroUsuarios:segundoUsuarios:colaUsuarios) | saldoBilletera (impactarBloque bloqueAAplicar primeroUsuarios) <= saldoBilletera( impactarBloque bloqueAAplicar segundoUsuarios) = elMenosAdineradoLuegoDeBloque bloqueAAplicar (primeroUsuarios:colaUsuarios)
-                                                                                            | otherwise                                                                                                                = elMenosAdineradoLuegoDeBloque bloqueAAplicar (segundoUsuarios:colaUsuarios)
+quienEsQue :: ComparacionDeSaldos -> Bloque -> [Usuario] -> Usuario
+quienEsQue _ _ [unicoUsuarioEnLista] = unicoUsuarioEnLista
+quienEsQue funcionAAplicar bloqueAAplicar (primeroUsuarios:segundoUsuarios:colaUsuarios) | (funcionAAplicar) (saldoBilletera (impactarBloque bloqueAAplicar primeroUsuarios)) (saldoBilletera (impactarBloque bloqueAAplicar segundoUsuarios)) = quienEsQue funcionAAplicar bloqueAAplicar (primeroUsuarios:colaUsuarios)
+                                                                                         | otherwise                                                                                                                                           = quienEsQue funcionAAplicar bloqueAAplicar (segundoUsuarios:colaUsuarios)
 peorBloqueDelBlockChain:: Usuario -> BlockChain -> Bloque 
 peorBloqueDelBlockChain _ [unBloque] = unBloque
 peorBloqueDelBlockChain unUsuario (primerBloque:segundoBloque:colaDeBloques) | saldoBilletera (impactarBloque primerBloque unUsuario) <= saldoBilletera (impactarBloque segundoBloque unUsuario) = peorBloqueDelBlockChain unUsuario (primerBloque:colaDeBloques)
                                                                              | otherwise                                                                                                         = peorBloqueDelBlockChain unUsuario (segundoBloque:colaDeBloques)
 
 impactarBlockChain :: BlockChain -> Usuario -> Usuario
-impactarBlockChain  [] usuario = usuario
-impactarBlockChain  (primerBloque:colaDeBloques) usuario  = impactarBlockChain colaDeBloques (impactarBloque primerBloque usuario) 
+impactarBlockChain  [] usuario             = usuario 
+impactarBlockChain  unaBlockChain usuario  = foldr impactarBloque usuario unaBlockChain 
 
 saldoHastaN :: Int -> [Bloque] -> Usuario -> Usuario
-saldoHastaN limite unBlockChain usuario  = impactarBlockChain (take limite unBlockChain) usuario
+saldoHastaN limite unBlockChain = impactarBlockChain (take limite unBlockChain)
 
 aplicacionDeBlockChainAUsuarios:: BlockChain -> [Usuario] -> [Usuario]
-aplicacionDeBlockChainAUsuarios unBlockChain unaListaDeUsuarios  = map (impactarBlockChain unBlockChain) unaListaDeUsuarios
+aplicacionDeBlockChainAUsuarios unBlockChain = map (impactarBlockChain unBlockChain) 
 
--- Como hacemos que el filter corte porque no corta nunca.
+blockChainInfinita :: Bloque -> BlockChain
 blockChainInfinita unBloque = [unBloque]++(blockChainInfinita (unBloque++unBloque))
 
-impactarBlockChainParcial usuario (unBloque:colaDeBloques) = (impactarBloque unBloque usuario:impactarBlockChainParcial usuario colaDeBloques)
+impactarBlockChainParcial :: BlockChain -> Usuario -> [Usuario]
+impactarBlockChainParcial (cabezaBloque:colaDeBloques) usuario = (impactarBloque cabezaBloque usuario:impactarBlockChainParcial colaDeBloques usuario)
 
-cuantosBloquesHacenFalta unaCantidad unBloque unUsuario = length(takeWhile (<=unaCantidad) (map saldoBilletera (impactarBlockChainParcial unUsuario (blockChainInfinita unBloque))))
-
+cuantosBloquesHacenFalta :: SaldoBilletera -> Bloque -> Usuario -> Int
+cuantosBloquesHacenFalta unaCantidad unBloque = length. (takeWhile (<=unaCantidad)) . (map saldoBilletera) . (impactarBlockChainParcial (blockChainInfinita unBloque))
