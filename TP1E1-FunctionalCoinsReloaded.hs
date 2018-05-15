@@ -58,17 +58,21 @@ probarFunciones = hspec $ do
    it "16- Se aplica la transaccion cinco en Pepe y el resultado se aplica en una billetera de 10 monedas, quedando con 3 monedas." $ transferencia "Jose" "Luciano" 7 pepe 10 `shouldBe` 3
    it "17- Se aplica la transaccion cinco a Lucho y el resultado se aplica en una billetera de 10 monedas, quedando con 17 monedas." $ transferencia "Jose" "Luciano" 7 lucho 10 `shouldBe` 17
   describe "Segunda entrega nro. 2:" $ do
+  describe "Testings de usuarios luego de transaccion:" $ do
    it "18- Se le impacta la transaccion 1 a Pepe y deberia quedar igual." $ do impactar transaccionUno pepe `shouldBe` pepe
    it "19- Se le impacta la transaccion 5 a Lucho y deberia tener una billetera de 9 monedas" $ do impactar transaccionCinco lucho `shouldBe` Usuario "Luciano" 9
    it "20- Se le impacta la transaccion 5 y luego 2 a Pepe y deberia quedar con una billetera de 8 monedas." $ do ((impactar transaccionDos).(impactar transaccionCinco)) pepe `shouldBe` Usuario "Jose" 8
+  describe "Testings de bloques:" $ do
    it "21- Se aplica el bloque 1 a Pepe y el resultado es un usuario con una billetera de 18." $ impactarBloque bloqueUno pepe `shouldBe` Usuario "Jose" 18
    it "22- Se determina quienes son los usuarios con un saldo mayor a 10, se deberia mostrar a Pepe con su saldo original y no se deberia mostrar a Luciano." $ do quienesQuedanConAlMenos 10 bloqueUno [pepe,lucho] `shouldBe` [pepe]
-   it "23- Se determina quien es el mas adinerado, aplicandole a una lista con Pepe y Lucho, quedaria Pepe." $ do quienEsQue (>=) bloqueUno [lucho,pepe] `shouldBe` pepe
-   it "24- Se determina quien es el menos adinerado, aplicandole a una lista con Pepe y Lucho, quedaria Lucho." $ do quienEsQue (<=) bloqueUno [lucho,pepe] `shouldBe` lucho
+   it "23- Se determina quien es el mas adinerado, aplicandole a una lista con Pepe y Lucho, quedaria Pepe." $ do quienEsQue mayor bloqueUno [lucho,pepe] `shouldBe` pepe
+   it "24- Se determina quien es el menos adinerado, aplicandole a una lista con Pepe y Lucho, quedaria Lucho." $ do quienEsQue menor bloqueUno [lucho,pepe] `shouldBe` lucho
+  describe "Testings de blockchain:" $ do
    it "25- Se determina cual es el peor bloque, aplicandolo a el BlockChain definido y a Pepe, deberia quedar Pepe con una billetera de 18." $ do impactarBloque (peorBloqueDelBlockChain pepe blockChain) pepe `shouldBe` Usuario "Jose" 18
    it "26- Se aplica el BlockChain definido a Pepe, deberia quedar Pepe con un saldo de 115." $ do impactarBlockChain blockChain pepe `shouldBe` Usuario "Jose" 115
    it "27- Se aplica el BlockChain hasta 3 a Pepe, deberia quedar Pepe con un saldo de 51." $ do  saldoHastaN 3 blockChain pepe `shouldBe` Usuario "Jose" 51
    it "28- Se aplica el BlockChain a Pepe y a Lucho, la sumatoria de sus saldos deberia ser de 115." $ do  (sum . map saldoBilletera) (aplicacionDeBlockChainAUsuarios blockChain [pepe,lucho]) `shouldBe` 115
+  describe "Testings de blockchain infinito:" $ do
    it "29- Se aplica el BlockChain inifito a Pepe hasta que su saldo sea de 10.000 creditos y la cantidad de bloques aplicados deberian ser 11. " $ do cuantosBloquesHacenFalta 10000 bloqueUno pepe `shouldBe` 11
 
 --------------------
@@ -171,6 +175,13 @@ quienEsQue :: ComparacionDeSaldos -> Bloque -> [Usuario] -> Usuario
 quienEsQue _ _ [unicoUsuarioEnLista] = unicoUsuarioEnLista
 quienEsQue funcionAAplicar bloqueAAplicar (primeroUsuarios:segundoUsuarios:colaUsuarios) | (funcionAAplicar) (saldoBilletera (impactarBloque bloqueAAplicar primeroUsuarios)) (saldoBilletera (impactarBloque bloqueAAplicar segundoUsuarios)) = quienEsQue funcionAAplicar bloqueAAplicar (primeroUsuarios:colaUsuarios)
                                                                                          | otherwise                                                                                                                                           = quienEsQue funcionAAplicar bloqueAAplicar (segundoUsuarios:colaUsuarios)
+
+mayor:: SaldoBilletera -> SaldoBilletera -> Bool
+mayor a b = a >= b
+
+menor:: SaldoBilletera -> SaldoBilletera -> Bool
+menor a b = a <= b
+
 peorBloqueDelBlockChain:: Usuario -> BlockChain -> Bloque 
 peorBloqueDelBlockChain _ [unBloque] = unBloque
 peorBloqueDelBlockChain unUsuario (primerBloque:segundoBloque:colaDeBloques) | saldoBilletera (impactarBloque primerBloque unUsuario) <= saldoBilletera (impactarBloque segundoBloque unUsuario) = peorBloqueDelBlockChain unUsuario (primerBloque:colaDeBloques)
