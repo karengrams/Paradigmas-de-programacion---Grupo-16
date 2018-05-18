@@ -167,13 +167,28 @@ impactarBloque [] usuario                         = usuario
 impactarBloque (cabezaBloque:colaBloques) usuario = impactarBloque colaBloques (impactar cabezaBloque usuario)
 
 
-quienesQuedanConAlMenos funcionAAplicar bloqueAAplicar = filter (funcionAAplicar.saldoBilletera.impactarBloque bloqueAAplicar) -- Hay que usar find y all pero use esto y funciono 
+quienesQuedanConAlMenos funcionAAplicar bloqueAAplicar = filter (funcionAAplicar.saldoBilletera.impactarBloque bloqueAAplicar)
 
-
+{-
 quienEsMayorOMenor :: ComparacionDeSaldos -> Bloque -> [Usuario] -> Usuario
 quienEsMayorOMenor _ _ [unicoUsuarioEnLista] = unicoUsuarioEnLista
 quienEsMayorOMenor funcionAAplicar bloqueAAplicar (primeroUsuarios:segundoUsuarios:colaUsuarios) | (funcionAAplicar) (saldoBilletera (impactarBloque bloqueAAplicar primeroUsuarios)) (saldoBilletera (impactarBloque bloqueAAplicar segundoUsuarios)) = quienEsMayorOMenor funcionAAplicar bloqueAAplicar (primeroUsuarios:colaUsuarios)
                                                                                                  | otherwise                                                                                                                                           = quienEsMayorOMenor funcionAAplicar bloqueAAplicar (segundoUsuarios:colaUsuarios)
+																								 
+																								 
+-}
+
+quienCumple funcionAAplicar unBloque unaLista unUsuario = all (funcionAAplicar (saldoBilletera (impactarBloque unBloque unUsuario))) (map (saldoBilletera.(impactarBloque unBloque)) unaLista)
+
+quienEsElMayorOMenor funcionAAplicar unBloque listaUsuarios = find (quienCumple funcionAAplicar unBloque listaUsuarios) listaUsuarios
+
+
+
+
+
+
+
+
 
 peorBloqueDelBlockChain:: Usuario -> BlockChain -> Bloque 
 peorBloqueDelBlockChain _ [unBloque] = unBloque
