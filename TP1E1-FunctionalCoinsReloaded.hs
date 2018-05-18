@@ -164,8 +164,7 @@ impactar transaccionAImpactar unUsuario = Usuario (nombre unUsuario) (transaccio
 
 impactarBloque :: Bloque -> Usuario -> Usuario
 impactarBloque [] usuario                         = usuario
-impactarBloque (cabezaBloque:colaBloques) usuario = impactarBloque colaBloques (impactar cabezaBloque usuario)
-
+impactarBloque unBloque usuario = foldr impactar usuario unBloque 
 
 quienesQuedanConAlMenos funcionAAplicar bloqueAAplicar = filter (funcionAAplicar.saldoBilletera.impactarBloque bloqueAAplicar)
 
@@ -181,14 +180,6 @@ quienEsMayorOMenor funcionAAplicar bloqueAAplicar (primeroUsuarios:segundoUsuari
 quienCumple funcionAAplicar unBloque unaLista unUsuario = all (funcionAAplicar (saldoBilletera (impactarBloque unBloque unUsuario))) (map (saldoBilletera.(impactarBloque unBloque)) unaLista)
 
 quienEsElMayorOMenor funcionAAplicar unBloque listaUsuarios = find (quienCumple funcionAAplicar unBloque listaUsuarios) listaUsuarios
-
-
-
-
-
-
-
-
 
 peorBloqueDelBlockChain:: Usuario -> BlockChain -> Bloque 
 peorBloqueDelBlockChain _ [unBloque] = unBloque
@@ -211,8 +202,13 @@ blockChainInfinita unBloque = [unBloque]++(blockChainInfinita (unBloque++unBloqu
 
 --Fijarse estas dos ultimas
 
+{-
 impactarBlockChainParcial :: BlockChain -> Usuario -> [Usuario]
 impactarBlockChainParcial (cabezaBloque:colaDeBloques) usuario = (impactarBloque cabezaBloque usuario:impactarBlockChainParcial colaDeBloques (impactarBloque cabezaBloque usuario))
 
 cuantosBloquesHacenFalta :: SaldoBilletera -> Bloque -> Usuario -> Int
 cuantosBloquesHacenFalta unaCantidad unBloque = (+1). length. (takeWhile (<unaCantidad)) . (map saldoBilletera) . (impactarBlockChainParcial (blockChainInfinita unBloque))
+-}
+
+cuantosBloquesHacenFalta contador unaCantidad (unBloque:colaBloques) unUsuario | unaCantidad >= (saldoBilletera unUsuario) = cuantosBloquesHacenFalta (contador+1) unaCantidad colaBloques (impactarBloque unBloque unUsuario)
+																			   | otherwise = contador
