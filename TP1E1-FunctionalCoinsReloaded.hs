@@ -9,11 +9,9 @@ import Data.List
 import Data.Maybe 
 import Test.Hspec
 
-type Dinero = Float
 type SaldoBilletera = Dinero
+type Dinero = Float
 type Nombre = String
-type Evento = SaldoBilletera -> SaldoBilletera
-type Transaccion = Usuario -> Evento
 
 data Usuario = Usuario {
 nombre :: String,
@@ -65,7 +63,7 @@ probarFunciones = hspec $ do
    it "20- Se le impacta la transaccion 5 y luego 2 a Pepe y deberia quedar con una billetera de 8 monedas." $ do ((impactar transaccionDos).(impactar transaccionCinco)) pepe `shouldBe` Usuario "Jose" 8
   describe "Testings de bloques:" $ do
    it "21- Se aplica el bloque 1 a Pepe y el resultado es un usuario con una billetera de 18." $ impactarBloque bloqueUno pepe `shouldBe` Usuario "Jose" 18
-   it "22- Se determina quienes son los usuarios con un saldo mayor a 10, se deberia mostrar a Pepe con su saldo original y no se deberia mostrar a Luciano." $ do quienesQuedanConAlMenos (>=10) bloqueUno [pepe,lucho] `shouldBe` [pepe]
+   --it "22- Se determina quienes son los usuarios con un saldo mayor a 10, se deberia mostrar a Pepe con su saldo original y no se deberia mostrar a Luciano." $ do quienesQuedanConAlMenos (>=10) bloqueUno [pepe,lucho] `shouldBe` [pepe]
    --it "23- Se determina quien es el mas adinerado, aplicandole a una lista con Pepe y Lucho, quedaria Pepe." $ do quienEsMayorOMenor (>=) bloqueUno [lucho,pepe] `shouldBe` pepe
    --it "24- Se determina quien es el menos adinerado, aplicandole a una lista con Pepe y Lucho, quedaria Lucho." $ do quienEsMayorOMenor (<=) bloqueUno [lucho,pepe] `shouldBe` lucho
   describe "Testings de blockchain:" $ do
@@ -79,6 +77,8 @@ probarFunciones = hspec $ do
 --------------------
 --    EVENTOS     --
 --------------------
+
+type Evento = SaldoBilletera -> SaldoBilletera
 
 nuevoDinero :: Evento
 nuevoDinero nuevoMonto = nuevoMonto
@@ -107,6 +107,8 @@ quedaIgual saldoBilletera = saldoBilletera
 --------------------
 -- TRANSACCIONES  --
 --------------------
+
+type Transaccion = Usuario -> Evento
 
 transaccionUno :: Transaccion
 transaccionUno  = transaccion "Luciano" cerrarCuenta
@@ -166,11 +168,13 @@ impactarBloque :: Bloque -> Usuario -> Usuario
 impactarBloque [] usuario       = usuario
 impactarBloque unBloque usuario = foldr impactar usuario unBloque 
 
-quienesQuedanConAlMenos funcionAAplicar bloqueAAplicar = filter (funcionAAplicar.saldoBilletera.impactarBloque bloqueAAplicar)
+quienesQuedanConAlMenos funcionAAplicar bloqueAAplicar= filter (funcionAAplicar.saldoBilletera.impactarBloque bloqueAAplicar)
 
-quienCumple funcionAAplicar unBloque unaLista unUsuario = all (funcionAAplicar (saldoBilletera (impactarBloque unBloque unUsuario))) (map (saldoBilletera.(impactarBloque unBloque)) unaLista)
+quienEsMayorOMenor funcionAAplicar bloqueAAplicar lista = quienesQuedanConAlMenos ((==) (funcionAAplicar bloqueAAplicar lista)) bloqueAAplicar lista 
 
-quienEsElMayorOMenor funcionAAplicar unBloque lista = find (quienCumple funcionAAplicar unBloque lista) lista
+mayor bloque = maximum.map(saldoBilletera. impactarBloque bloque)
+
+menor bloque = minimum.map(saldoBilletera. impactarBloque bloque)
 
 peorBloqueDelBlockChain:: Usuario -> BlockChain -> Bloque 
 peorBloqueDelBlockChain _ [unBloque] = unBloque
@@ -191,7 +195,7 @@ aplicacionDeBlockChainAUsuarios unBlockChain = map (impactarBlockChain unBlockCh
 blockChainInfinita :: Bloque -> BlockChain
 blockChainInfinita unBloque = [unBloque]++(blockChainInfinita (unBloque++unBloque))
 
-cuantosBloquesHacenFalta contador unaCantidad (unBloque:colaBloques) uUsuario 
+cuantosBloquesHacenFalta contador unaCantidad (unBloque:colaBloques) unUsuario 
   | unaCantidad >= (saldoBilletera unUsuario) = cuantosBloquesHacenFalta (contador+1) unaCantidad colaBloques (impactarBloque unBloque unUsuario)
   | otherwise = contador
 
