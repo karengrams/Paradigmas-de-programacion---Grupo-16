@@ -168,23 +168,21 @@ quienesQuedanConAlMenos :: SaldoBilletera -> Bloque -> [Usuario] -> [Usuario]
 quienesQuedanConAlMenos saldoMinimo bloque = filter ((>= saldoMinimo).saldoBilletera.impactarBloque bloque)
 
 {-
- menor bloque = minimum.map(saldoBilletera.impactarBloque bloque)
+menor bloque = minimum.map(saldoBilletera.impactarBloque bloque)
  
- mayor bloque  = maximum.map (saldoBilletera.impactarBloque bloque)
+mayor bloque  = maximum.map (saldoBilletera.impactarBloque bloque)
  
- quienEsElMayorOMenor criterio bloque listaDeUsuarios = fromJust (find ((==)(criterio bloque listaDeUsuarios).saldoBilletera.impactarBloque bloque) listaDeUsuarios)
- -} 
+quienEsElMayorOMenor criterio bloque listaDeUsuarios = fromJust (find ((==)(criterio bloque listaDeUsuarios).saldoBilletera.impactarBloque bloque) listaDeUsuarios) 
+-}
 
 quienCumple :: ComparacionDeSaldos -> Bloque -> [a] -> (a -> Usuario) -> Usuario -> Bool 
-quienCumple criterioAComparar bloque listaDeUsuarios funcionEnLista usuario = all (criterioAComparar (saldoBilletera (impactarBloque bloque usuario)) . saldoBilletera . funcionEnLista) listaDeUsuarios  
--- quienCumple (>=) bloqueUno [pepe,lucho] (impactarBloque bloqueUno)
--- Devuelve function porque espera el usuario pero, ¿donde sale el usuario? No entiendo eso. 
-
+quienCumple criterioAComparar bloque lista funcionEnLista usuario = all (criterioAComparar (saldoBilletera (impactarBloque bloque usuario)) . saldoBilletera . funcionEnLista) lista  
+ 
 quienEsElMayorOMenor :: ComparacionDeSaldos -> Bloque -> [Usuario] -> Usuario
 quienEsElMayorOMenor funcion bloque listaDeUsuarios = fromJust (find (quienCumple funcion bloque listaDeUsuarios (impactarBloque bloque)) listaDeUsuarios)
  
 peorBloqueDelBlockChain:: Usuario -> BlockChain -> Bloque 
-peorBloqueDelBlockChain usuario blockchain = fromJust (find (\  bloque -> quienCumple (<=) bloque blockchain (flip impactarBloque usuario) usuario) blockchain)
+peorBloqueDelBlockChain usuario blockchain = fromJust (find (\ bloque -> quienCumple (<=) bloque blockchain (flip impactarBloque usuario) usuario) blockchain)
 
 impactarBlockChain :: BlockChain -> Usuario -> Usuario
 impactarBlockChain  [] usuario             = usuario 
@@ -199,8 +197,6 @@ aplicacionDeBlockChainAUsuarios unBlockChain = map (impactarBlockChain unBlockCh
 blockChainInfinita :: Bloque -> BlockChain
 blockChainInfinita bloque = [bloque]++(blockChainInfinita (bloque++bloque))
 
-
--- Ver si se puede hacer de otra forma
 cuantosBloquesHacenFalta contador unaCantidad (bloque:colaBloques) usuario 
   | unaCantidad >= (saldoBilletera usuario) = cuantosBloquesHacenFalta (contador+1) unaCantidad colaBloques (impactarBloque bloque usuario)
   | otherwise = contador
