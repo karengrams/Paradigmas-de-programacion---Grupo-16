@@ -207,8 +207,7 @@ quienEsElMenor3 unBloque unaListaUsuarios = fromJust (find (esElMenor3 unaListaU
  
  
 quienEsElMayor3 :: Bloque -> [Usuario] -> Usuario
-quienEsElMayor3 unBloque unaListaUsuarios = cambiarSignoSaldo3 (fromJust (find (esElMenor3 (map cambiarSignoSaldo3 unaListaUsuarios)) (map cambiarSignoSaldo3 unaListaUsuarios)))
- 
+quienEsElMayor3 unBloque unaListaUsuarios = fromJust (find ((esElMenor3 (map cambiarSignoSaldo3 unaListaUsuarios)).cambiarSignoSaldo3)  unaListaUsuarios)
  
 esElMenor3 :: [Usuario] -> Usuario -> Bool
 esElMenor3 unaListaUsuarios unUsuario = all ((>= saldoBilletera unUsuario).saldoBilletera) unaListaUsuarios
