@@ -74,7 +74,7 @@ probarFunciones = hspec $ do
    it "27- Se aplica el BlockChain hasta 3 a Pepe, deberia quedar Pepe con un saldo de 51." $ do  saldoHastaN 3 blockChain pepe `shouldBe` Usuario "Jose" 51
    it "28- Se aplica el BlockChain a Pepe y a Lucho, la sumatoria de sus saldos deberia ser de 115." $ do  (sum . map saldoBilletera) (aplicacionDeBlockChainAUsuarios blockChain [pepe,lucho]) `shouldBe` 115
   describe "Testings de blockchain infinito:" $ do
-   it "29- Se aplica el BlockChain inifito a Pepe hasta que su saldo sea de 10.000 creditos y la cantidad de bloques aplicados deberian ser 11. " $ do cuantosBloquesHacenFalta 0 10000 (blockChainInfinita bloqueUno) pepe `shouldBe` 11
+   it "29- Se aplica el BlockChain inifito a Pepe hasta que su saldo sea de 10.000 creditos y la cantidad de bloques aplicados deberian ser 11. " $ do cuantosBloquesHacenFalta 10000 (blockChainInfinita bloqueUno) pepe `shouldBe` 11
 
 --------------------
 --    EVENTOS     --
