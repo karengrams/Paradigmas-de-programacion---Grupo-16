@@ -238,9 +238,9 @@ aplicacionDeBlockChainAUsuarios unBlockChain = map (impactarBlockChain unBlockCh
 blockChainInfinita :: Bloque -> BlockChain
 blockChainInfinita bloque = [bloque]++(blockChainInfinita (bloque++bloque))
 
-cuantosBloquesHacenFalta contador unaCantidad (bloque:colaBloques) usuario 
-  | unaCantidad >= (saldoBilletera usuario) = cuantosBloquesHacenFalta (contador+1) unaCantidad colaBloques (impactarBloque bloque usuario)
-  | otherwise = contador
+cuantosBloquesHacenFalta unaCantidad (unBloque:colaBloques) unUsuario 
+  | unaCantidad >= (saldoBilletera unUsuario) = (+1) (cuantosBloquesHacenFalta unaCantidad colaBloques (impactarBloque unBloque unUsuario))
+  | otherwise                                 = 0
 
 
 
