@@ -167,22 +167,33 @@ impactarBloque bloque usuario = foldr impactar usuario bloque
 quienesQuedanConAlMenos :: SaldoBilletera -> Bloque -> [Usuario] -> [Usuario]
 quienesQuedanConAlMenos saldoMinimo bloque = filter ((>= saldoMinimo).saldoBilletera.impactarBloque bloque)
 
+{-Me parece necesario una pequeña gran explicación del como funcionan las funciones de abajo, ya que son medias complicadas de entender (o al menos para nosotros) y no se nos 
+ocurren otros nombres para hacerlos mas 'declarativos'. Primero, el primer punto a corregir fue que las funciones de quien era el menos y el mas adinerado, repetian
+codigo (pueden ver en nuestros comits), entonces pensamos en hacerlo de otra manera con find y all: le pasamos una lista de usuarios, y una funcion que determine el
+mayor o el manor y despues aplicabamos parcialmente el all y listo. El problema es que no podiamos reutilizar ese cachito de codigo para averiguar el peor bloque porque
+los tipos no coincidian. Entonces, como nos recomendaron en clase, lo hicimos con numeros. De la misma forma que aplicamos parcialmente el all, teniamos que aplicar el 
+find, pero, si lo aplicabamos parcialmente sin pasarle la funcion donde se le aplicaba el bloque, nos comparaba quien era el mayor sin ninguna 'modificacion'. Sin embargo,
+a las funciones que nos definene quienes son los menos y lo mas adinerados reciben solamente un bloque y usuarios, porque: a) asi nos lo pedia el enunciado; b) nos 
+corrigeron muchas veces (gracias); c) si le pasabamos la funcion ahi, nos quedaban tipos que no queriamos que nos quedaran. Otro punto a aclarar, es que si bien podriamos 
+haber hecho todo en una sola funcion, o con lambda, nosotros no entendiamos bien la funcionalidad. Asi que decidimos hacer pequeñas funciones a las cuales se le delege
+todo y quede mas bello y expresivo. Esperemos que se entienda, podemos decir que fue un poquito complicado pensarlo. Nos vemos el proximo martes :). -}
+
 condicion funcion usuarioUno usuarioDos = funcion usuarioUno >= funcion usuarioDos
 
-elMayorEs funcion usuarios unUsuario = all (condicion funcion unUsuario) usuarios
+quienEsElMayor funcion usuarios unUsuario = all (condicion funcion unUsuario) usuarios
 
-queBilleteraEsLaMayor funcion usuarios = (fromJust.find (elMayorEs funcion usuarios)) usuarios
+queBilleteraEsLaMayor funcion usuarios = (fromJust.find (quienEsElMayor funcion usuarios)) usuarios
 
-billeteraDespuesDeBloque bloque = saldoBilletera.impactarBloque bloque
+billeteraDespuesDeUnBloque bloque = saldoBilletera.impactarBloque bloque
 
 quienEsElMasAdinerado :: Bloque -> [Usuario] -> Usuario
-quienEsElMasAdinerado bloque  = queBilleteraEsLaMayor (billeteraDespuesDeBloque bloque) 
+quienEsElMasAdinerado bloque  = queBilleteraEsLaMayor (billeteraDespuesDeUnBloque bloque) 
 
 quienEsElMenosAdinerado :: Bloque -> [Usuario] -> Usuario
-quienEsElMenosAdinerado bloque  = queBilleteraEsLaMayor ( (*) (-1) . billeteraDespuesDeBloque bloque) 
+quienEsElMenosAdinerado bloque  = queBilleteraEsLaMayor ( (*) (-1) . billeteraDespuesDeUnBloque bloque) 
 
 peorBloqueDelBlockChain :: Usuario -> BlockChain -> Bloque
-peorBloqueDelBlockChain usuario = queBilleteraEsLaMayor ( (*)(-1). flip billeteraDespuesDeBloque usuario)
+peorBloqueDelBlockChain usuario = queBilleteraEsLaMayor ( (*)(-1). flip billeteraDespuesDeUnBloque usuario)
 
 impactarBlockChain :: BlockChain -> Usuario -> Usuario
 impactarBlockChain  [] usuario             = usuario 
