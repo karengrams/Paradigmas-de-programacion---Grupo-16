@@ -184,6 +184,26 @@ quienEsElMayorOMenor funcion bloque listaDeUsuarios = fromJust (find (quienCumpl
 peorBloqueDelBlockChain:: Usuario -> BlockChain -> Bloque 
 peorBloqueDelBlockChain usuario blockchain = fromJust (find (\ bloque -> quienCumple (<=) bloque blockchain (flip impactarBloque usuario) usuario) blockchain)
 
+
+--METODO 3
+quienEsElMenor3 :: Bloque -> [Usuario] -> Usuario
+quienEsElMenor3 unBloque unaListaUsuarios = fromJust (find (esElMenor3 unaListaUsuarios) unaListaUsuarios)
+
+quienEsElMayor3 :: Bloque -> [Usuario] -> Usuario
+quienEsElMayor3 unBloque unaListaUsuarios = cambiarSignoSaldo3 (fromJust (find (esElMenor3 (map cambiarSignoSaldo3 unaListaUsuarios)) (map cambiarSignoSaldo3 unaListaUsuarios)))
+
+esElMenor3 :: [Usuario] -> Usuario -> Bool
+esElMenor3 unaListaUsuarios unUsuario = all ((>= saldoBilletera unUsuario).saldoBilletera) unaListaUsuarios
+
+cambiarSignoSaldo3 :: Usuario -> Usuario
+cambiarSignoSaldo3 unUsuario = Usuario (nombre unUsuario) ((-1) * saldoBilletera unUsuario)
+
+peorBloqueDelBlockChain3 :: Usuario -> BlockChain -> Bloque
+peorBloqueDelBlockChain3 unUsuario unaBlockChain = fromJust (find (\ unBloque -> esElMenor3 (map (flip impactarBloque unUsuario) unaBlockChain) (impactarBloque unBloque unUsuario)) unaBlockChain)
+--
+
+
+
 impactarBlockChain :: BlockChain -> Usuario -> Usuario
 impactarBlockChain  [] usuario             = usuario 
 impactarBlockChain  blockchain usuario  = foldr impactarBloque usuario blockchain 
