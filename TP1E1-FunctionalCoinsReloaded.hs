@@ -167,63 +167,22 @@ impactarBloque bloque usuario = foldr impactar usuario bloque
 quienesQuedanConAlMenos :: SaldoBilletera -> Bloque -> [Usuario] -> [Usuario]
 quienesQuedanConAlMenos saldoMinimo bloque = filter ((>= saldoMinimo).saldoBilletera.impactarBloque bloque)
 
----------------
--- Una forma --
----------------
+condicion funcion usuarioUno usuarioDos = funcion usuarioUno >= funcion usuarioDos
 
-quienEsElMayor :: Bloque -> [Usuario] -> Usuario -> Bool
-quienEsElMayor bloque usuarios usuario = all ((>=) (saldoBilletera (impactarBloque bloque usuario)).saldoBilletera.impactarBloque bloque) usuarios
+elMayorEs funcion usuarios unUsuario = all (condicion funcion unUsuario) usuarios
+
+queBilleteraEsLaMayor funcion usuarios = (fromJust.find (elMayorEs funcion usuarios)) usuarios
+
+billeteraDespuesDeBloque bloque = saldoBilletera.impactarBloque bloque
 
 quienEsElMasAdinerado :: Bloque -> [Usuario] -> Usuario
-quienEsElMasAdinerado bloque usuarios = (fromJust.find (quienEsElMayor bloque usuarios)) usuarios
+quienEsElMasAdinerado bloque  = queBilleteraEsLaMayor (billeteraDespuesDeBloque bloque) 
 
 quienEsElMenosAdinerado :: Bloque -> [Usuario] -> Usuario
-quienEsElMenosAdinerado bloque usuarios = (fromJust.find (not.quienEsElMayor bloque usuarios)) usuarios
+quienEsElMenosAdinerado bloque  = queBilleteraEsLaMayor ( (*) (-1) . billeteraDespuesDeBloque bloque) 
 
 peorBloqueDelBlockChain :: Usuario -> BlockChain -> Bloque
-peorBloqueDelBlockChain usuario (cabezaBlockChain:colaBlockChain)
-   | (saldoBilletera.flip impactarBloque usuario) cabezaBlockChain <= (saldoBilletera.flip impactarBloque usuario) (head colaBlockChain) = cabezaBlockChain
-   | otherwise = peorBloqueDelBlockChain usuario colaBlockChain
-
-
-------------------
---  Otra forma  --
-------------------
-{-
-quienCumple :: (SaldoBilletera -> SaldoBilletera -> Bool)-> Bloque -> [Usuario] -> Usuario -> Bool
-quienCumple condicion bloque usuarios usuario = all (condicion (saldoBilletera (impactarBloque bloque usuario)).saldoBilletera.impactarBloque bloque) usuarios
-
-quienEsElMayorOMenor :: (SaldoBilletera -> SaldoBilletera -> Bool) -> Bloque -> [Usuario] -> Usuario
-quienEsElMayorOMenor condicion bloque usuarios =  fromJust (find (quienCumple condicion bloque usuarios) usuarios)
--}
-
-
-----------------------------------
---  Otra forma de la otra forma --
-----------------------------------
-
-{-
-quienEsElMenor3 :: Bloque -> [Usuario] -> Usuario
-quienEsElMenor3 unBloque unaListaUsuarios = fromJust (find (esElMenor3 unaListaUsuarios) unaListaUsuarios)
- 
- 
-quienEsElMayor3 :: Bloque -> [Usuario] -> Usuario
-+quienEsElMayor3 unBloque unaListaUsuarios = fromJust (find ((esElMenor3 (map cambiarSignoSaldo3 unaListaUsuarios)).cambiarSignoSaldo3)  unaListaUsuarios)
- 
- 
-esElMenor3 :: [Usuario] -> Usuario -> Bool
-esElMenor3 unaListaUsuarios unUsuario = all ((>= saldoBilletera unUsuario).saldoBilletera) unaListaUsuarios
- 
- 
-cambiarSignoSaldo3 :: Usuario -> Usuario
-cambiarSignoSaldo3 unUsuario = Usuario (nombre unUsuario) ((-1) * saldoBilletera unUsuario)
- 
- 
-peorBloqueDelBlockChain3 :: Usuario -> BlockChain -> Bloque
-peorBloqueDelBlockChain3 unUsuario unaBlockChain = fromJust (find (\ unBloque -> esElMenor3 (map (flip impactarBloque unUsuario) unaBlockChain) (impactarBloque unBloque unUsuario)) unaBlockChain)
--}
-
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+peorBloqueDelBlockChain usuario = queBilleteraEsLaMayor ( (*)(-1). flip billeteraDespuesDeBloque usuario)
 
 impactarBlockChain :: BlockChain -> Usuario -> Usuario
 impactarBlockChain  [] usuario             = usuario 
