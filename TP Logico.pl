@@ -46,9 +46,10 @@ esSpoiler(Serie,PosibleSpoiler):-
 
 % Se pueden realizar consultas existenciales e individuales ya que se trata de un predicado inversible
 
-leSpoileo(PersonaUno,PersonaDos,Spoiler):-
+leSpoileo(PersonaUno,PersonaDos,Serie):-
     miraOQuiereMirar(PersonaDos,Serie),
-    leDijo(PersonaUno,PersonaDos,Serie,Spoiler),
+    leDijo(PersonaUno,PersonaDos,Serie,Spolier),
+	esSpoiler(Serie,Spolier),
     PersonaUno \= PersonaDos.
 
 miraOQuiereMirar(PersonaDos,Serie):-
@@ -71,7 +72,8 @@ televidenteResponsable(Persona):-
 
 vieneZafando(Serie,Persona):-
     esPersona(Persona),
-    not(leSpoileo(Persona,_,_)),
+	miraOQuiereMirar(Persona,Serie),
+    not(leSpoileo(_,Persona,Serie)),
     esPopularOEsFuerte(Serie).
 
 esSerie(Serie):-
@@ -82,9 +84,51 @@ esSerie(Serie):-
 
 esPopularOEsFuerte(Serie):- esPopular(Serie).
 esPopularOEsFuerte(Serie):-
-    esSerie(Serie),
+    cantidadDeCapitulos(Serie,Temporada,_),
      forall(cantidadDeCapitulos(Serie,Temporada,_),esFuerte(Serie,Temporada)).
 
 esFuerte(Serie,Temporada):- paso(Serie,Temporada,_,muerte(_)).
 esFuerte(Serie,Temporada):- paso(Serie,Temporada,_,relacion(parentesco,_,_)).
 esFuerte(Serie,Temporada):- paso(Serie,Temporada,_,relacion(amorosa,_,_)).
+
+:- begin_tests(spoiler_alert).
+
+test(esSpoiler_muerte_emperor_starWars, nondet) :- 
+	esSpoiler(starWars, muerte(emperor)).
+test(esSpoiler_muerte_pedro_starWars, fail) :- 
+	esSpoiler(starWars, muerte(pedro)).
+test(esSpoiler_relacion_anakin_rey_starWars, nondet) :- 
+	esSpoiler(starWars, relacion(parentesco, anakin, rey)).
+test(esSpoiler_relacion_anakin_lavezzi_starWars, fail) :- 
+	esSpoiler(starWars, relacion(parentesco, anakin, lavezzi)).
+
+test(leSpoileo_gaston_maiu_got, nondet) :- 
+	leSpoileo(gaston, maiu, got).
+test(leSpoileo_nico_maiu_starWars, nondet) :- 
+	leSpoileo(gaston, maiu, got).
+	
+test(televidenteResponsable_juan, nondet) :-
+	televidenteResponsable(juan).
+test(televidenteResponsable_aye, nondet) :-
+	televidenteResponsable(aye).
+test(televidenteResponsable_maiu, nondet) :-
+	televidenteResponsable(maiu).
+test(televidenteResponsable_nico, fail) :-
+	televidenteResponsable(nico).
+test(televidenteResponsable_gaston, fail) :-
+	televidenteResponsable(gaston).	
+test(televidenteResponsable_inversible, set(UnaPersona == [aye, maiu, juan])) :-
+	televidenteResponsable(UnaPersona).	
+
+test(vieneZafando_maiu_ninguna, fail) :-
+	vieneZafando(_,maiu).
+test(vieneZafando_juan_himym, nondet) :-
+	vieneZafando(himym,juan).
+test(vieneZafando_juan_got, nondet) :-
+	vieneZafando(got,juan).	
+test(vieneZafando_juan_hoc, nondet) :-
+	vieneZafando(hoc,juan).
+test(vieneZafando_nico_starWars, set(UnaPersona == [nico])) :-
+	vieneZafando(starWars,UnaPersona).	
+
+:- end_tests(spoiler_alert).
