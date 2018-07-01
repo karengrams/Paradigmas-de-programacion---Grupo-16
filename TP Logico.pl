@@ -167,18 +167,6 @@ test(vieneZafando_nico_starWars, set(UnaPersona == [nico])) :-
 
 % SEGUNDA ENTREGA
 
-amigo(nico, maiu).
-amigo(maiu, gaston).
-amigo(maiu, juan).
-amigo(juan, aye).
-
-fullSpoil(PersonaUno,PersonaDos):-
-    leSpoileo(PersonaUno,PersonaDos,_).
-fullSpoil(PersonaUno,PersonaDos):-
-    amigo(PersonaDos,AmigoDePersonaDos),
-    fullSpoil(PersonaUno,AmigoDePersonaDos).
-
-% Consultar : ¿que onda Aye y Gaston?
 
 malaGente(Persona):-
     esPersona(Persona),
@@ -188,3 +176,17 @@ malaGente(Persona):-
     esPersona(Persona),
     leSpoileo(Persona,_,Serie),
     not(quienMiraQue(Persona,Serie)).
+
+amigo(nico, maiu).
+amigo(maiu, gaston).
+amigo(maiu, juan).
+amigo(juan, aye).
+
+fullSpoil(PersonaUno,PersonaDos):-
+    leSpoileo(PersonaUno,PersonaDos,_).
+fullSpoil(PersonaUno,PersonaDos):-
+    amigo(AmigoDePersonaDos, PersonaDos),
+	PersonaUno \= PersonaDos,
+    fullSpoil(PersonaUno,AmigoDePersonaDos).
+
+% Consultar : ¿que onda Aye y Gaston?
