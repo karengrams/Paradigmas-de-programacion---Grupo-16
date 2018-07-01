@@ -100,20 +100,33 @@ cantidadDePersonasQueMiran(Cantidad,Serie):-
     findall(Persona,quienMiraQue(Persona,Serie),Personas),
     length(Personas,Cantidad).
 
+/*
 esPopularOEsFuerte(Serie):-
     cantidadDeCapitulos(Serie,Temporada,_),
      forall(cantidadDeCapitulos(Serie,Temporada,_),fuerte(Serie,Temporada)).
+*/
+
+esPopularOEsFuerte(Serie):-
+    cantidadDeCapitulos(Serie,Temporada,_),
+     not((cantidadDeCapitulos(Serie,Temporada,_),not(fuerte(Serie,Temporada)))).
 
 fuerte(Serie,Temporada):- paso(Serie,Temporada,_,muerte(_)).
 fuerte(Serie,Temporada):- paso(Serie,Temporada,_,relacion(parentesco,_,_)).
 fuerte(Serie,Temporada):- paso(Serie,Temporada,_,relacion(amorosa,_,_)).
 fuerte(Serie,Temporada):-
-    paso(Serie,Temporada,_,plotTwist(PlotTwist)),
+    paso(Serie,Temporada, Capitulo,plotTwist(PlotTwist)),
+	cantidadDeCapitulos(Serie, Temporada, Capitulo), %Es final de temporada
     not(esCliche(PlotTwist)).
 
+/*
 esCliche(PlotTwist):-
    paso(Serie,_,_,plotTwist(PlotTwist)),
    forall(member(Palabra, PlotTwist), apareceEnOtraSerie(Palabra, Serie)).
+*/
+
+esCliche(PlotTwist):-
+   paso(Serie,_,_,plotTwist(PlotTwist)),
+   not((member(Palabra, PlotTwist), not(apareceEnOtraSerie(Palabra, Serie)))).
 
 apareceEnOtraSerie(Palabra, Serie):-
    paso(Serie,_,_,plotTwist(_)),
@@ -167,10 +180,15 @@ test(vieneZafando_nico_starWars, set(UnaPersona == [nico])) :-
 
 % SEGUNDA ENTREGA
 
-
+/*
 malaGente(Persona):-
     esPersona(Persona),
     forall(leDijo(Persona,PersonaDos,Serie,_),leSpoileo(Persona,PersonaDos,Serie)).
+*/
+
+malaGente(Persona):-
+    esPersona(Persona),
+    not((leDijo(Persona,PersonaDos,Serie,_), not(leSpoileo(Persona,PersonaDos,Serie)))).
 
 malaGente(Persona):-
     esPersona(Persona),
@@ -184,9 +202,9 @@ amigo(juan, aye).
 
 fullSpoil(PersonaUno,PersonaDos):-
     leSpoileo(PersonaUno,PersonaDos,_).
+	
 fullSpoil(PersonaUno,PersonaDos):-
     amigo(AmigoDePersonaDos, PersonaDos),
 	PersonaUno \= PersonaDos,
     fullSpoil(PersonaUno,AmigoDePersonaDos).
 
-% Consultar : ¿que onda Aye y Gaston?
