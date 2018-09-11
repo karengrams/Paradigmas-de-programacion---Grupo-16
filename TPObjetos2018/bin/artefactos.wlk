@@ -7,16 +7,13 @@ object espadaDelDestino {
 
 object collarDivino {
 
-	var property unidadDeLucha = 1
+	var property perlas = 1
 	
-	method unidadDeLucha(perlas){
-		unidadDeLucha=perlas
-	}
+	method unidadDeLucha()= self.perlas()
+	
 }
 
-object mascaraOscura {
-	var property unidadDeLucha = 0
-	
+object mascaraOscura {	
 	method unidadDeLucha() = (fuerzaOscura.poder()/2).max(4)
 	
 }
@@ -33,23 +30,20 @@ object cotaDeMalla {
 }
 
 object bendicion {
-	var property unidadDeLucha
 	method unidadDeLucha()= rolando.nivelDeHechiceria()
 }
 
 object ninguno {
-	var property unidadDeLucha = 0
+	const property unidadDeLucha = 0
 }
 
 object hechizo {
 	var property hechizo
-	var property unidadDeLucha
-	
+		
 	method unidadDeLucha()=hechizo.poder()
 }
 
 object espejo{
-	var property unidadDeLucha = 0
 	method mejorPertenencia(){
 		var pertenencias = []
 		pertenencias.addAll(rolando.artefactos()) // Esto, como lo de arriba, me hace un poco de ruido, porque si yo cambio de persona, deberia cambiar esto, pero deberia estar generico tambien, ¿se entiende?

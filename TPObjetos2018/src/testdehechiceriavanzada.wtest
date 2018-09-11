@@ -7,7 +7,7 @@ describe "Test de lucha y hechicería avanzada" {
 
 	fixture{
 		rolando.nuevosArtefactos([espadaDelDestino,mascaraOscura,collarDivino,armadura,espejo])
-		collarDivino.unidadDeLucha(5)		
+		collarDivino.perlas(5)		
 	}
 
 	test "Si Rolando tiene menos de 5 artefactos, esta armado" {
