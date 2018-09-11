@@ -1,62 +1,65 @@
-import hechizos.*
-import artefactos.*
+import rolando.*
 import fuerzaOscura.*
 
 object espadaDelDestino {
-	method dameTusPuntosDeLucha(listaDeArtefactos, nivelDeHechiceria) = 3
+	const property unidadDeLucha = 3
 }
 
 object collarDivino {
-	var property cantidadDePerlas = 1
-	
-	method dameTusPuntosDeLucha(listaDeArtefactos, nivelDeHechiceria) = self.cantidadDePerlas()
-}
 
-object mascaraOscura {
+	var property unidadDeLucha = 1
 	
-	method puntosFuerzaOscura() = fuerzaOscuraGlobal.poder()/2
-	
-	method dameTusPuntosDeLucha(listaDeArtefactos, nivelDeHechiceria) = self.puntosFuerzaOscura().max(4)
-}
-
-object espejo {
-	method dameTusPuntosDeLucha(listaDeArtefactos, nivelDeHechiceria) {
-
-		var listaSinEspejo = []
-		listaSinEspejo.addAll(listaDeArtefactos)
-		listaSinEspejo.remove(self)
-		return listaSinEspejo.max({
-			artefacto => artefacto.dameTusPuntosDeLucha(listaDeArtefactos, nivelDeHechiceria)
-		}).dameTusPuntosDeLucha(listaDeArtefactos,nivelDeHechiceria)
+	method unidadDeLucha(perlas){
+		unidadDeLucha=perlas
 	}
 }
 
-
-object armadura {
-	var property refuerzo = []
-
-	method dameTusPuntosDeLucha(listaDeArtefactos, nivelDeHechiceria) = 2 + self.refuerzo().dameTusPuntosDeLucha(nivelDeHechiceria)
+object mascaraOscura {
+	var property unidadDeLucha = 0
+	
+	method unidadDeLucha() = (fuerzaOscura.poder()/2).max(4)
+	
 }
 
-/* Refuerzos */
-/* Ibamos a hacer un nuevo archivo pero para un par de lineas nos parecio al pedo */
+object armadura {
+	var property refuerzo = ninguno
+		
+	method unidadDeLucha()= self.refuerzo().unidadDeLucha() + 2
+
+}
 
 object cotaDeMalla {
-	method dameTusPuntosDeLucha(nivelDeHechiceria) = 1
+	var property unidadDeLucha = 1
 }
 
 object bendicion {
-	method dameTusPuntosDeLucha(nivelDeHechiceria) = nivelDeHechiceria
+	var property unidadDeLucha
+	method unidadDeLucha()= rolando.nivelDeHechiceria()
 }
 
 object ninguno {
-	method dameTusPuntosDeLucha(nivelDeHechiceria) = 0
+	var property unidadDeLucha = 0
 }
 
-object libroDeHechizos {
-	const listaDeHechizos = []
+object hechizo {
+	var property hechizo
+	var property unidadDeLucha
 	
-	method listaDeHechizosPoderosos() = listaDeHechizos.filter({hechizo => hechizo.sosPoderoso()})
-	
-	method nivelDePoder() = self.listaDeHechizosPoderosos().sum({hechizo => hechizo.nivelDePoder()})
+	method unidadDeLucha()=hechizo.poder()
 }
+
+object espejo{
+	var property unidadDeLucha = 0
+	method mejorPertenencia(){
+		var pertenencias = []
+		pertenencias.addAll(rolando.artefactos()) // Esto, como lo de arriba, me hace un poco de ruido, porque si yo cambio de persona, deberia cambiar esto, pero deberia estar generico tambien, ¿se entiende?
+		pertenencias.remove(self)
+		if (pertenencias!=[]){return pertenencias.max({artefacto => artefacto.unidadDeLucha()})
+		}
+		return ninguno
+}
+
+	method unidadDeLucha() = self.mejorPertenencia().unidadDeLucha()
+}
+
+

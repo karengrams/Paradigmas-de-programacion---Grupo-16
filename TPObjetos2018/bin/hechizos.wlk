@@ -1,13 +1,28 @@
-object espectroMalefico {
+
+object espectroMalefico{
 	var property nombre = 'Espectro Malefico'
 	
-	method nivelDePoder()= self.nombre().length()
+	method poder()= self.nombre().length()
 	
-	method sosPoderoso()= self.nivelDePoder() > 15	
+	method sosPoderoso()= self.poder() > 15	
 
 }
 
-object hechizoBasico {
-	var property nivelDePoder = 10
-	var property sosPoderoso = false
+object hechizoBasico{
+	var property poder = 10
+	const property sosPoderoso = false
 }
+
+object libroDeHechizos {
+	const property listaDeHechizos = []
+	
+	method nuevosHechizos(nuevosHechizos){
+		listaDeHechizos.clear()
+		listaDeHechizos.addAll(nuevosHechizos)
+	}
+	
+	method listaDeHechizosPoderosos() = listaDeHechizos.filter({hechizo => hechizo.sosPoderoso()})
+	
+	method poder() = self.listaDeHechizosPoderosos().sum({hechizo => hechizo.poder()})
+}
+
