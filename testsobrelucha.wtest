@@ -1,0 +1,42 @@
+import example.*
+
+describe "Test sobre lucha" {
+	
+	fixture{
+		rolando.nuevosArtefactos([espadaDelDestino,mascaraOscura,collarDivino])
+	}
+
+	test "Si Rolando no tiene ningun artefacto, su nivel de lucha sera de 1" {
+		rolando.nuevosArtefactos([])
+		assert.equals(rolando.nivelDeLucha(),1)
+	}
+	
+	test "Si Rolando tiene un collar divino con 5 perlas, una mascara oscura y una espada del destino, su nivel de lucha sera de 13" {
+		
+		collarDivino.unidadDeLucha(5)
+		assert.equals(rolando.nivelDeLucha(),13)	
+	}
+
+	test "Si Rolando tiene un collar divino con 3 perlas, una mascara oscura y una espada del destino, su nivel de lucha sera de 13" {
+		
+		collarDivino.unidadDeLucha(3)
+		assert.equals(rolando.nivelDeLucha(),11)	
+	}
+	
+	test "Si la base de lucha es 8 y Rolando tiene un collar divino con 5 perlas, una mascara oscura y una espada del destino, su nivel de lucha sera de 20"{
+		collarDivino.unidadDeLucha(5)
+		rolando.baseDeLucha(8)
+		assert.equals(rolando.nivelDeLucha(),20)
+	}
+	
+	test "Si ocurre un eclipse, las unidades de lucha de la mascasa oscura sera de 5"{
+		fuerzaOscura.ocurreUnEclipse()
+		assert.equals(mascaraOscura.unidadDeLucha(),5)	
+	}
+	
+	test "Si Rolando tiene un collar divino con 5 perlas y una espada del destino, su nivel de lucha sera de 13" {
+		collarDivino.unidadDeLucha(5)
+		rolando.sacaArtefacto(mascaraOscura)
+		assert.equals(rolando.nivelDeLucha(),9)
+	}
+}
