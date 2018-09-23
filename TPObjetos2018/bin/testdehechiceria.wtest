@@ -1,0 +1,40 @@
+import example.*
+
+describe "Tests sobre hechiceria" {
+
+	test "Si Rolando tiene como hechizo preferido 'especto malefico', su nivel de hechiceria sera de 56" {
+		rolando.hechizoPreferido(espectroMalefico)
+		assert.equals(rolando.nivelDeHechiceria(),56)
+	}
+	
+	test "Si Rolando tiene como hechizo preferido 'especto malefico' cuyo nombre es 'espectro superrecontramalefico muajajaja', su nivel de hechiceria sera de 125" {
+		espectroMalefico.nombre('Espectro superrecontramalefico muajajaja')
+		rolando.hechizoPreferido(espectroMalefico)
+		assert.equals(rolando.nivelDeHechiceria(),125)
+	}
+	
+	test "Si Rolando tiene como hechizo preferido 'hechizo basico', su nivel de hechiceria sera de 35" {
+		rolando.hechizoPreferido(hechizoBasico)
+		assert.equals(rolando.nivelDeHechiceria(),35)
+	}	
+	
+	test "Si ocurre un eclipse y el hechizo preferido de Rolando es 'espectro malefico', su nivel de hechiceria sera de 61" {
+		rolando.hechizoPreferido(espectroMalefico)
+		fuerzaOscura.ocurreUnEclipse()
+		assert.equals(rolando.nivelDeHechiceria(),61)
+	}
+	
+	test "Si el nombre de 'especto malefico' es 'Especto Malefico', sera un hechizo poderoso" {
+		espectroMalefico.nombre('Espectro Malefico')
+		assert.that(espectroMalefico.sosPoderoso())
+	}
+	
+	test "Si el nombre de 'especto malefico' es 'pepe', NO sera un hechizo poderoso" {
+		espectroMalefico.nombre('pepe')
+		assert.notThat(espectroMalefico.sosPoderoso())
+	}
+	
+	test "El hechizo basico NO es un hechizo poderoso" {
+		assert.notThat(hechizoBasico.sosPoderoso())
+	}
+}
