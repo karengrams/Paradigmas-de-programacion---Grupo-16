@@ -1,15 +1,20 @@
-import example.*
+import fuerzaOscura.*
+import hechizos.*
+import artefactos.*
+import rolando.*
 
 describe "Tests sobre hechiceria" {
 
-	test "Si Rolando tiene como hechizo preferido 'especto malefico', su nivel de hechiceria sera de 56" {
+	fixture{
 		rolando.hechizoPreferido(espectroMalefico)
+	}
+
+	test "Si Rolando tiene como hechizo preferido 'especto malefico', su nivel de hechiceria sera de 56" {
 		assert.equals(rolando.nivelDeHechiceria(),56)
 	}
 	
 	test "Si Rolando tiene como hechizo preferido 'especto malefico' cuyo nombre es 'espectro superrecontramalefico muajajaja', su nivel de hechiceria sera de 125" {
 		espectroMalefico.nombre('Espectro superrecontramalefico muajajaja')
-		rolando.hechizoPreferido(espectroMalefico)
 		assert.equals(rolando.nivelDeHechiceria(),125)
 	}
 	
@@ -19,7 +24,6 @@ describe "Tests sobre hechiceria" {
 	}	
 	
 	test "Si ocurre un eclipse y el hechizo preferido de Rolando es 'espectro malefico', su nivel de hechiceria sera de 61" {
-		rolando.hechizoPreferido(espectroMalefico)
 		fuerzaOscura.ocurreUnEclipse()
 		assert.equals(rolando.nivelDeHechiceria(),61)
 	}

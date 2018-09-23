@@ -36,6 +36,7 @@ object rolando{
 		artefactos.clear()
 		artefactos.addAll(nuevosArtefactos)
 	}	
+
 	
 	/* PUNTO 3 */
 	

@@ -44,11 +44,16 @@ object hechizo {
 }
 
 object espejo{
+	var property duenio = rolando 
+	
+	// Lo unicializo como Rolando porque por ahora el dueño es Rolando. Si se cambia, habria que cambiar 
+	//hacer un par de cambios.
+	
 	method mejorPertenencia(){
 		var pertenencias = []
-		pertenencias.addAll(rolando.artefactos()) // Esto, como lo de arriba, me hace un poco de ruido, porque si yo cambio de persona, deberia cambiar esto, pero deberia estar generico tambien, ¿se entiende?
+		pertenencias.addAll(duenio.artefactos())
 		pertenencias.remove(self)
-		if (pertenencias!=[]){return pertenencias.max({artefacto => artefacto.unidadDeLucha()})
+		if (pertenencias.isEmpty().negate()){return pertenencias.max({artefacto => artefacto.unidadDeLucha()})
 		}
 		return ninguno
 }
