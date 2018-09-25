@@ -12,6 +12,7 @@ object rolando{
 	const property artefactos = []
 	
 	/* PUNTO 1 */
+	
 	method nivelDeHechiceria()= self.baseDeHechiceria() * hechizoPreferido.poder() + fuerzaOscura.poder()
 	method sosPoderoso()= self.hechizoPreferido().sosPoderoso()
 	

@@ -15,7 +15,7 @@ describe "Test de lucha y hechicería avanzada" {
 	}
 
 	test "Si Rolando tiene menos de 5 artefactos, NO esta armado" {
-		rolando.nuevosArtefactos([espadaDelDestino,mascaraOscura,collarDivino])
+		rolando.sacaArtefacto(armadura)
 		assert.notThat(rolando.estasCargado())
 	}
 	
@@ -34,14 +34,12 @@ describe "Test de lucha y hechicería avanzada" {
 	}
 	
 	test "Si la armadura tiene como resfuerzo el hechizo 'basico', su nivel de lucha sera de 12" {
-		hechizo.hechizo(hechizoBasico)
-		armadura.refuerzo(hechizo)
+		armadura.refuerzo(hechizoBasico)
 		assert.equals(armadura.unidadDeLucha(),12)
 	}
 	
 	test "Si la armadura tiene como resfuerzo el hechizo 'espectro malefico', su nivel de lucha sera de 19" {
-		hechizo.hechizo(espectroMalefico)
-		armadura.refuerzo(hechizo)
+		armadura.refuerzo(espectroMalefico)
 		assert.equals(armadura.unidadDeLucha(),19)
 	}
 	
