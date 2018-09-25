@@ -39,8 +39,15 @@ object rolando{
 	}	
 
 	
-	/* PUNTO 3 */
-	
+	/* PUNTO 3 */ 
+		
+	method artefactosSinEspejo() =
+	 self.artefactos().filter(
+	 	{artefacto=> artefacto!=espejo}
+	 )
+	 
+	method mejorArtefacto()=self.artefactosSinEspejo().max({artefacto => artefacto.unidadDeLucha()})
+	 
 	method estasCargado() = self.artefactos().size() >= 5
 	
 

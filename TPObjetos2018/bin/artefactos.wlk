@@ -14,6 +14,7 @@ object collarDivino {
 }
 
 object mascaraOscura {	
+	
 	method unidadDeLucha() = (fuerzaOscura.poder()/2).max(4)
 	
 }
@@ -26,7 +27,7 @@ object armadura {
 
 }
 
-object cotaDeMalla {
+object cotaDeMalla {	
 	var property unidadDeLucha = 1
 }
 
@@ -35,20 +36,21 @@ object bendicion {
 }
 
 object ninguno {
+	
 	const property unidadDeLucha = 0
 }
 
 object espejo{
-	method mejorPertenencia(){
-		var pertenencias = []
-		pertenencias.addAll(rolando.artefactos())
-		pertenencias.remove(self)
-		if (pertenencias.isEmpty().negate()){return pertenencias.max({artefacto => artefacto.unidadDeLucha()})
-		}
-		return ninguno
-}
 
-	method unidadDeLucha() = self.mejorPertenencia().unidadDeLucha()
+	method unidadDeLucha(){
+		if(rolando.artefactosSinEspejo().isEmpty()){
+			return 0
+		}
+		else{
+			return rolando.mejorArtefacto().unidadDeLucha()
+		}
+	} 
+	
 }
 
 
