@@ -1,0 +1,66 @@
+import fuerzaOscura.*
+import hechizos.*
+import artefactos.*
+import Personaje.*
+
+describe "Test de lucha reformulada"{
+	
+	const espectroMalefico = new Logo (nombre='Espectro malefico')
+	const mascaraOscura = new Mascara(indiceDeOscuridad=1,minimo=4)
+	const mascaraInservible = new Mascara(indiceDeOscuridad=0,minimo=4)
+	const espadaDelDestino = new Arma()
+	const rolando = new Personaje(artefactos=[mascaraOscura,espadaDelDestino,collarDivino],hechizoPreferido=espectroMalefico)
+	
+	fixture{
+		collarDivino.perlas(5)
+	}
+	
+	test "Si se le quitan todos los artefactos de Rolando, su nivel de lucha sera 1" {
+		rolando.nuevosArtefactos([])
+		assert.equals(rolando.nivelDeLucha(),1)
+	}
+	
+	test "Si Rolando tiene como artefacto una espada del destino, un collar divino de cinco perlas y una mascara oscura, su nivel de lucha sera de 13"{
+		assert.equals(rolando.nivelDeLucha(),13)
+	}
+	
+	test "Si Rolando tiene como artefacto una espada del destino, un collar divino de tres perlas y una mascara oscura, su nivel de lucha sera de 11"{
+		collarDivino.perlas(3)
+		assert.equals(rolando.nivelDeLucha(),11)
+	}
+	
+	test "Si Rolando tiene como artefacto una espada del destino, un collar divino de cinco perlas y una mascara oscura, y su base de lucha es de ocho, su nivel de lucha sera de 20"{
+		rolando.baseDeLucha(8)
+		assert.equals(rolando.nivelDeLucha(),20)
+	}
+	
+	test "Si ocurre un eclipse, el valor de lucha de mascara oscura sera de 5"{
+		fuerzaOscura.ocurreUnEclipse()
+		assert.equals(mascaraOscura.unidadDeLucha(),5)	
+	}
+	
+	test "Si se le quita la mascara oscura de los artefactos, el nivel de lucha de Rolando sera de 9"{
+		rolando.sacaArtefacto(mascaraOscura)
+		assert.equals(rolando.nivelDeLucha(),9)
+	}
+	
+	test "Si Rolando tiene solamente una mascara inservible, la unidad de lucha de la misma sera de 4"{
+		rolando.baseDeLucha(0) /*  Como es la mascara oscura de Rolando, para que 
+		me solamente la unidad de lucha de la mascara inservible, lo coloco en 0
+		 */
+		rolando.nuevosArtefactos([mascaraInservible])
+		assert.equals(rolando.nivelDeLucha(),4)
+	}
+	
+	test "Si Rolando tiene solamente una mascara inservible cuyo minimo es 2, la unidad de lucha de la misma sera de 2"{
+		rolando.baseDeLucha(0) /*  Como es la mascara oscura de Rolando, para que 
+		me solamente la unidad de lucha de la mascara inservible, lo coloco en 0
+		 */
+		mascaraInservible.minimo(2)
+		rolando.nuevosArtefactos([mascaraInservible])
+		assert.equals(rolando.nivelDeLucha(),2)
+	}
+	
+	
+
+}

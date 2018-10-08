@@ -1,12 +1,16 @@
-import rolando.*
+import Personaje.*
 import hechizos.*
 import artefactos.*
 import fuerzaOscura.*
 
 describe "Test sobre lucha" {
 	
+	const espectroMalefico = new Logo (nombre='Espectro malefico')
+	const mascaraOscura = new Mascara(indiceDeOscuridad=1,minimo=4)
+	const espadaDelDestino = new Arma()
+	const rolando = new Personaje(artefactos = [espadaDelDestino,mascaraOscura,collarDivino],hechizoPreferido=espectroMalefico)
+	
 	fixture{
-		rolando.nuevosArtefactos([espadaDelDestino,mascaraOscura,collarDivino])
 		collarDivino.perlas(5)
 	}
 

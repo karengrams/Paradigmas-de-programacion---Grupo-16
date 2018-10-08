@@ -1,18 +1,17 @@
 import fuerzaOscura.*
 import hechizos.*
 import artefactos.*
-import rolando.*
+import Personaje.*
 
 describe "Tests sobre hechiceria" {
 
-	fixture{
-		rolando.hechizoPreferido(espectroMalefico)
-	}
-
+	const espectroMalefico = new Logo (nombre='Espectro malefico')
+	const rolando = new Personaje(artefactos=[],hechizoPreferido=espectroMalefico)
+	
 	test "Si Rolando tiene como hechizo preferido 'especto malefico', su nivel de hechiceria sera de 56" {
 		assert.equals(rolando.nivelDeHechiceria(),56)
 	}
-	
+
 	test "Si Rolando tiene como hechizo preferido 'especto malefico' cuyo nombre es 'espectro superrecontramalefico muajajaja', su nivel de hechiceria sera de 125" {
 		espectroMalefico.nombre('Espectro superrecontramalefico muajajaja')
 		assert.equals(rolando.nivelDeHechiceria(),125)

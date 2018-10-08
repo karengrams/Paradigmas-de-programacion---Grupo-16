@@ -1,13 +1,21 @@
 import fuerzaOscura.*
 import hechizos.*
 import artefactos.*
-import rolando.*
+import Personaje.*
 
 describe "Test de lucha y hechicería avanzada" {
 
+	const espectroMalefico = new Logo (nombre='Espectro malefico')
+	const mascaraOscura = new Mascara(indiceDeOscuridad=1,minimo=4)
+	const espadaDelDestino = new Arma()
+	const armadura = new Armadura()
+	const rolando = new Personaje(artefactos=[espadaDelDestino,mascaraOscura,collarDivino,armadura],hechizoPreferido=espectroMalefico)
+	const espejo = new Espejo(duenio=rolando)
+	const libroDeHechizos = new LibroDeHechizos()
+
 	fixture{
-		rolando.nuevosArtefactos([espadaDelDestino,mascaraOscura,collarDivino,armadura,espejo])
-		collarDivino.perlas(5)		
+		collarDivino.perlas(5)
+		rolando.agregaArtefacto(espejo)
 	}
 
 	test "Si Rolando tiene menos de 5 artefactos, esta armado" {
@@ -19,16 +27,23 @@ describe "Test de lucha y hechicería avanzada" {
 		assert.notThat(rolando.estasCargado())
 	}
 	
-	test "Si Rolando tiene espada del destino, mascaraOscura, collarDivino, armadura sin resfuerzo y el espejo, su nivel de lucha sera de 20" {
+	test "Si Rolando tiene collar divino con cinco perlas, su nivel de lucha sera de 6" {
+		rolando.nuevosArtefactos([collarDivino])
+		assert.equals(rolando.nivelDeLucha(),6)
+	}
+	
+	test "Si Rolando tiene espada del destino, mascara oscura, collar divino, armadura sin resfuerzo y el espejo, su nivel de lucha sera de 20" {
 		assert.equals(rolando.nivelDeLucha(),20)
 	}
 	
 	test "Si la armadura tiene como resfuerzo la bendicion, su nivel de lucha sera de 58" {
+		const bendicion = new Bendicion(rolando)
 		armadura.refuerzo(bendicion)
 		assert.equals(armadura.unidadDeLucha(),58)
 	}
 	
 	test "Si la armadura tiene como resfuerzo la cota de malla, su nivel de lucha sera de 3" {
+		const cotaDeMalla= new CotaDeMalla(unidadDeLucha=1)
 		armadura.refuerzo(cotaDeMalla)
 		assert.equals(armadura.unidadDeLucha(),3)
 	}
