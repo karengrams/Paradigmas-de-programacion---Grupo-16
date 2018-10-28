@@ -3,7 +3,6 @@ import hechizos.*
 import artefactos.*
 
 class Personaje{
-	const property baseDeHechiceria = 3
 	var property nivelDeHechiceria = 0
 	var property hechizoPreferido
 	var property monedasDeOro=100
@@ -11,6 +10,8 @@ class Personaje{
 	var property nivelDeLucha = 0
 	var property baseDeLucha = 1
 	const property artefactos = []
+	
+	method baseDeHechiceria()=3
 		
 	method nivelDeHechiceria()= self.baseDeHechiceria() * hechizoPreferido.poder() + fuerzaOscura.poder()
 	method sosPoderoso()= self.hechizoPreferido().sosPoderoso()
@@ -19,7 +20,7 @@ class Personaje{
 	
 	method unidadesDeLucha()=
 		self.artefactos().sum({
-			artefacto => artefacto.unidadDeLucha()
+			artefacto => artefacto.unidadDeLucha(self)
 		})		
 	
 	method agregaArtefacto(nuevoArtefacto){

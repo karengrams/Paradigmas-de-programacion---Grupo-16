@@ -5,10 +5,18 @@ import Personaje.*
 
 describe "Test de lucha reformulada"{
 	
-	const espectroMalefico = new Logo (nombre='Espectro malefico')
-	const mascaraOscura = new Mascara(indiceDeOscuridad=1,minimo=4)
-	const mascaraInservible = new Mascara(indiceDeOscuridad=0,minimo=4)
+	// ARTEFACTOS
+	
+	const mascaraOscura = new Mascara(indiceDeOscuridad=1,minimoDeMascara=4)
 	const espadaDelDestino = new Arma()
+	
+	// HECHIZOS
+	
+	const espectroMalefico = new Logo (nombre='Espectro malefico')
+	
+	
+	// PERSONAJES
+	
 	const rolando = new Personaje(artefactos=[mascaraOscura,espadaDelDestino,collarDivino],hechizoPreferido=espectroMalefico)
 	
 	fixture{
@@ -36,7 +44,7 @@ describe "Test de lucha reformulada"{
 	
 	test "Si ocurre un eclipse, el valor de lucha de mascara oscura sera de 5"{
 		fuerzaOscura.ocurreUnEclipse()
-		assert.equals(mascaraOscura.unidadDeLucha(),5)	
+		assert.equals(mascaraOscura.unidadDeLucha(rolando),5)	
 	}
 	
 	test "Si se le quita la mascara oscura de los artefactos, el nivel de lucha de Rolando sera de 9"{
@@ -45,20 +53,13 @@ describe "Test de lucha reformulada"{
 	}
 	
 	test "Si Rolando tiene solamente una mascara inservible, la unidad de lucha de la misma sera de 4"{
-		rolando.baseDeLucha(0) /*  Como es la mascara oscura de Rolando, para que 
-		me solamente la unidad de lucha de la mascara inservible, lo coloco en 0
-		 */
-		rolando.nuevosArtefactos([mascaraInservible])
-		assert.equals(rolando.nivelDeLucha(),4)
+		const mascaraInservible = new Mascara(indiceDeOscuridad=0,minimoDeMascara=4)
+		assert.equals(mascaraInservible.unidadDeLucha(rolando),4)
 	}
 	
 	test "Si Rolando tiene solamente una mascara inservible cuyo minimo es 2, la unidad de lucha de la misma sera de 2"{
-		rolando.baseDeLucha(0) /*  Como es la mascara oscura de Rolando, para que 
-		me solamente la unidad de lucha de la mascara inservible, lo coloco en 0
-		 */
-		mascaraInservible.minimo(2)
-		rolando.nuevosArtefactos([mascaraInservible])
-		assert.equals(rolando.nivelDeLucha(),2)
+		const mascaraInservible = new Mascara(indiceDeOscuridad=0,minimoDeMascara=2)
+		assert.equals(mascaraInservible.unidadDeLucha(rolando),2)
 	}
 	
 	

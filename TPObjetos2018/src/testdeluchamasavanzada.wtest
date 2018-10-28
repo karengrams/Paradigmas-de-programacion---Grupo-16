@@ -5,18 +5,22 @@ import fuerzaOscura.*
 
 describe "Test de lucha mas avanzada" {
 	
+	// ARTEFACTOS
+	
 	const espadaDelDestino = new Arma()
-	const mascaraOscura = new Mascara(indiceDeOscuridad=1,minimo=4)
+	const mascaraOscura = new Mascara(indiceDeOscuridad=1,minimoDeMascara=4)
 	const armadura = new Armadura()
+	
+	// HECHIZOS
+	
 	const espectroMalefico = new Logo (nombre='Espectro malefico')
-	const rolando = new Personaje(artefactos=[espadaDelDestino,mascaraOscura,collarDivino,armadura],hechizoPreferido=espectroMalefico)
-	const espejo = new Espejo(duenio=rolando)
-	const hechizoDeLogos = new Logo (nombre='Espectro malefico')
-	const libroDeHechizos=new LibroDeHechizos(listaDeHechizos=[hechizoDeLogos,hechizoBasico])
+	
+	// PERSONAJES
+
+	const rolando = new Personaje(artefactos=[espejo,espadaDelDestino,mascaraOscura,collarDivino,armadura],hechizoPreferido=espectroMalefico)
 
 	fixture{
 		collarDivino.perlas(5)
-		rolando.agregaArtefacto(espejo)
 	}
 	
 	test "Si Rolando tiene cinco artefactos, esta cargado" {
@@ -33,26 +37,24 @@ describe "Test de lucha mas avanzada" {
 	}
 	
 	test "Si la armadura de Rolando tiene como refuerzo una bendicion para este, la habilidad de lucha de dicho artefacto sera de 58" {
-		const bendicion = new Bendicion(rolando)
 		armadura.refuerzo(bendicion)
-		assert.equals(armadura.unidadDeLucha(),58)
+		assert.equals(armadura.unidadDeLucha(rolando),58)
 	}
 	
 	test "Si la armadura de Rolando tiene como refuerzo una cota de malla, la habilidad de lucha de dicho artefacto sera de 3" {
-		const cotaDeMalla = new CotaDeMalla()
+		const cotaDeMalla = new CotaDeMalla(unidadLucha=1)
 		armadura.refuerzo(cotaDeMalla)
-		cotaDeMalla.unidadDeLucha(1)
-		assert.equals(armadura.unidadDeLucha(),3)
+		assert.equals(armadura.unidadDeLucha(rolando),3)
 	}
 	
 	test "Si la armadura de Rolando tiene como refuerzo el hechizo basico, la habilidad de lucha de dicho artefacto sera de 12"{
 		armadura.refuerzo(hechizoBasico)
-		assert.equals(armadura.unidadDeLucha(),12)
+		assert.equals(armadura.unidadDeLucha(rolando),12)
 	}
 	
 	test "Si la armadura de Rolando tiene como refuerzo el espectro malefico, la habilidad de lucha de dicho artefacto sera de 19"{
 		armadura.refuerzo(espectroMalefico)
-		assert.equals(armadura.unidadDeLucha(),19)
+		assert.equals(armadura.unidadDeLucha(rolando),19)
 	}
 	
 	test "Si Rolando tiene solamente el espejo , su nivel de lucha sera de 1" {
@@ -61,12 +63,14 @@ describe "Test de lucha mas avanzada" {
 	}
 	
 	test "Si Rolando tiene solamente el libro de hechizos, su nivel de lucha sera de 56"{
+		const hechizoDeLogos = new Logo (nombre='Espectro malefico')
+		const libroDeHechizos=new LibroDeHechizos(listaDeHechizos=[hechizoDeLogos,hechizoBasico])
 		rolando.hechizoPreferido(libroDeHechizos)
 		assert.equals(rolando.nivelDeHechiceria(),56)
 	}
 	
 	test "Si se le agrega otra armadura con refuerzo una cota de malla de 6 unidades de lucha y base 5 a Rolando, tendra como nivel de lucha 37"{
-		const cotaDeMallaExtra = new CotaDeMalla(unidadDeLucha=6)
+		const cotaDeMallaExtra = new CotaDeMalla(unidadLucha=6)
 		const armaduraExtra=new Armadura(refuerzo=cotaDeMallaExtra,valorBase=5)
 		armaduraExtra.refuerzo(cotaDeMallaExtra)
 		rolando.agregaArtefacto(armaduraExtra)

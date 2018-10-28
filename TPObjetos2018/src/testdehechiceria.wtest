@@ -28,7 +28,6 @@ describe "Tests sobre hechiceria" {
 	}
 	
 	test "Si el nombre de 'especto malefico' es 'Especto Malefico', sera un hechizo poderoso" {
-		espectroMalefico.nombre('Espectro Malefico')
 		assert.that(espectroMalefico.sosPoderoso())
 	}
 	

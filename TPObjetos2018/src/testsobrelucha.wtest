@@ -5,9 +5,18 @@ import fuerzaOscura.*
 
 describe "Test sobre lucha" {
 	
-	const espectroMalefico = new Logo (nombre='Espectro malefico')
-	const mascaraOscura = new Mascara(indiceDeOscuridad=1,minimo=4)
+	// ARTEFACTOS
+	
+	const mascaraOscura = new Mascara(indiceDeOscuridad=1,minimoDeMascara=4)
 	const espadaDelDestino = new Arma()
+	
+	// HECHIZOS
+	
+	const espectroMalefico = new Logo (nombre='Espectro malefico')
+	
+	
+	// PERSONAJE
+
 	const rolando = new Personaje(artefactos = [espadaDelDestino,mascaraOscura,collarDivino],hechizoPreferido=espectroMalefico)
 	
 	fixture{
@@ -35,7 +44,7 @@ describe "Test sobre lucha" {
 	
 	test "Si ocurre un eclipse, las unidades de lucha de la mascasa oscura sera de 5"{
 		fuerzaOscura.ocurreUnEclipse()
-		assert.equals(mascaraOscura.unidadDeLucha(),5)	
+		assert.equals(mascaraOscura.unidadDeLucha(rolando),5)	
 	}
 	
 	test "Si Rolando tiene una espada del destino y un collar divino de cinco perlas, su nivel de lucha sera de 9" {
