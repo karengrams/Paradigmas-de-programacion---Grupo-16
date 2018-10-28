@@ -60,7 +60,7 @@ class Armadura inherits Artefacto{
 	var property refuerzo = ninguno
 	var property valorBase = 2
 	
-	override method valor()=refuerzo.valor(self)
+	override method valor()=refuerzo.valorDeRefuerzo(self)
 
 	override method unidadDeLucha(unPersonaje)= self.refuerzo().unidadDeLucha(unPersonaje)+self.valorBase()
 
@@ -70,7 +70,7 @@ class Armadura inherits Artefacto{
 
 class Refuerzo{
 	method unidadDeLucha(unPersonaje)
-	method valor(unaArmadura)
+	method valorDeRefuerzo(unaArmadura)
 }
 
 class CotaDeMalla inherits Refuerzo{
@@ -78,16 +78,16 @@ class CotaDeMalla inherits Refuerzo{
 	
 	override method unidadDeLucha(unJugador)=self.unidadLucha()
 
-	override method valor(unaArmadura)=self.unidadLucha()/2
+	override method valorDeRefuerzo(unaArmadura)=self.unidadLucha()/2
 }
  
 object bendicion inherits Refuerzo{
-	override method valor(unaArmadura)=unaArmadura.valorBase()
+	override method valorDeRefuerzo(unaArmadura)=unaArmadura.valorBase()
 	override method unidadDeLucha(unPersonaje) = unPersonaje.nivelDeHechiceria()
 }
 
 object ninguno inherits Refuerzo{
-	override method valor(unValorBase)=2
+	override method valorDeRefuerzo(unValorBase)=2
 	override method unidadDeLucha(unPersonaje)=0
 
 }

@@ -38,31 +38,36 @@ class Personaje{
 	
 	method estasCargado() = self.artefactos().size() >= 5
 	
-	// Segunda entrega 
-	
-	method compraArtefacto(artefactoNuevo){
-		if(self.podesComprarArtefacto(artefactoNuevo)){
-				self.agregaArtefacto(artefactoNuevo)
-				self.monedasDeOro(self.monedasDeOro()-artefactoNuevo.valor())
-			}
-	}
-	
-	method compraHechizo(hechizoNuevo){
-		if(self.podesComprarHechizo(hechizoNuevo)){
-			self.monedasDeOro(self.monedasDeOro()+hechizoPreferido.valor()/2-hechizoNuevo.valor())
-			self.hechizoPreferido(hechizoNuevo)	
-		}
-	}
-	
-	method podesComprarHechizo(hechizo)=self.monedasDeOro()+self.hechizoPreferido().valor()-hechizo.valor()>=0
-	
-	method podesComprarArtefacto(artefacto)=self.monedasDeOro()-artefacto.valor()>=0
-	
-	method canjeaHechizo(hechizo){
-		if(hechizoPreferido.valor()/2>hechizo.valor()) { self.hechizoPreferido(hechizo) }
-		else{self.compraHechizo(hechizo)}
-	}
-
+	// SEGUNDA ENTREGA
+		
+ 
+ 	method canjeaHechizo(hechizoNuevo){
+ 		self.lanzaExcepcionSi(self.noPodesCanjearHechizo(hechizoNuevo),'Ni tu hechizo preferido ni tus monedas de oro abarca las monedas necesarias para canjear el hechizo solicitado. Cumpli objetivos para aumentar las monedas de oro.')
+ 		self.monedasDeOro(self.monedasDeOro().min(self.monedasDeOro()+self.valorDeHechizoPreferido()-hechizoNuevo.valor()))
+ 	}
+ 	
+ 	method valorDeHechizoPreferido()=self.hechizoPreferido().valor()/2
+ 	
+ 	method podesCanjearHechizo(unHechizo)=self.monedasDeOro()+self.hechizoPreferido().valor()>=unHechizo.valor()
+ 	
+ 	method noPodesCanjearHechizo(unHechizo)=self.podesCanjearHechizo(unHechizo).negate()
+ 		
+ 	method compraArtefacto(artefactoNuevo){
+ 		self.lanzaExcepcionSi(self.noPodesComprarArtefacto(artefactoNuevo),'No te alcanzan las monedas de oro para adquirir el nuevo artefacto. Cumpli objetivos para aumentar tus monedas de oro.')
+ 		self.agregaArtefacto(artefactoNuevo)
+ 		self.monedasDeOro(self.monedasDeOro()-artefactoNuevo.valor())
+ 	}
+ 	
+ 	method podesComprarArtefacto(artefacto)=self.monedasDeOro()>=artefacto.valor()
+ 	
+ 	method noPodesComprarArtefacto(artefacto)=self.podesComprarArtefacto(artefacto).negate()
+ 	
 	method cumpleObjetivo()=self.monedasDeOro(self.monedasDeOro()+10)
 	
+	method lanzaExcepcionSi(condicion, mensaje){
+   		if(condicion){ throw new NoSePuedeComprarOCanjear(mensaje) }
+   	}
+
 }
+
+class NoSePuedeComprarOCanjear inherits Exception{}

@@ -6,6 +6,8 @@ class Logo{
 		
 	method valor()=self.poder()
 	
+	method valorDeRefuerzo(unaArmadura)=self.valor()+unaArmadura.valorBase()
+	
 	method poder()= self.nombre().size()*self.multiplo()
 	
 	method unidadDeLucha(unPersonaje)=self.poder()
@@ -19,6 +21,9 @@ object hechizoBasico{
 	var property poder = 10	
 
 	method sosPoderoso()= false
+	
+	method valor()=self.poder()
+	method valorDeRefuerzo(unaArmadura)=self.valor()+unaArmadura.valorBase()
 	
 	
 	method unidadDeLucha(unPersonaje)=self.poder()
