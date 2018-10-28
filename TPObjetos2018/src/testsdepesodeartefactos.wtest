@@ -1,0 +1,83 @@
+import fuerzaOscura.*
+import hechizos.*
+import artefactos.*
+import Personaje.*
+
+describe "Test de pesos de los artefactos" {
+	
+	// HECHIZOS
+	const espectroMalefico = new Logo (nombre='Espectro malefico')
+	
+	
+	// ARTEFACTOS
+	const espadaVieja = new Arma(fechaDeCompra=new Date(7,5,2006),pesoArma=7)
+	const espadaNueva = new Arma(fechaDeCompra=new Date(),pesoArma=4)
+	const espadaNormal = new Arma(fechaDeCompra= new Date().plusDays(-50),pesoArma=5)
+	const mascaraOscura = new Mascara(indiceDeOscuridad=1,minimoDeMascara=0,pesoMascara=3)
+	const mascaraClara = new Mascara(indiceDeOscuridad=0,minimoDeMascara=0,pesoMascara=2)
+	const armaduraConCota = new Armadura(refuerzo=new CotaDeMalla(unidadLucha=5),pesoArmadura=10)
+	const armaduraConHechizoPar = new Armadura(refuerzo=hechizoComercial,pesoArmadura=12)
+	const armaduraConHechizoImpar = new Armadura(refuerzo=espectroMalefico,pesoArmadura=12)
+	const armaduraSinRefuerzo = new Armadura(pesoArmadura=12)
+
+	// PERSONAJES
+	
+	const merlin = new Personaje(artefactos=[],hechizoPreferido=hechizoBasico,limiteDeCarga=10)
+	const ursula = new Personaje(artefactos=[mascaraOscura,armaduraConCota],hechizoPreferido=hechizoBasico,limiteDeCarga=200)
+
+	fixture {
+		collarDivino.perlas(5)
+	}
+
+	test "El peso de la espada vieja es de 6kg." {
+		assert.equals(espadaVieja.pesoTotal(),6)
+	}
+	
+	test "El peso de la espada nueva es de 4kg." {
+		assert.equals(espadaNueva.pesoTotal(),4)
+	}
+	
+	test "El peso de la espada normal es de 4kg." {
+		assert.equals(espadaNormal.pesoTotal(),4.95)
+	}
+	
+	test "El peso del collar divino es de 2,5kg." {
+		assert.equals(collarDivino.pesoTotal(),2.5)
+	}
+	
+	test "El peso de la mascara oscura sera de 3kg." {
+		assert.equals(mascaraOscura.pesoTotal(),3)
+	}
+	
+	test "El peso de la mascara oscura luego de un eclipse sera de 5kg." {
+		fuerzaOscura.ocurreUnEclipse()
+		assert.equals(mascaraOscura.pesoTotal(),5)
+	}
+	
+	test "El peso de la mascara clara sera de 2kg." {
+		assert.equals(mascaraClara.pesoTotal(),2)
+	}
+	
+	test "El peso de una armadura con cota de malla sera de 11kg." {
+		assert.equals(armaduraConCota.pesoTotal(),11)
+	}
+	
+	test "El peso de una armadura con hechizo par sera de 14kg." {
+		assert.equals(armaduraConHechizoPar.pesoTotal(),14)
+	}
+	
+	test "El peso de una armadura con hechizo impar sera de 13kg." {
+		assert.equals(armaduraConHechizoImpar.pesoTotal(),13)
+	}
+		
+	test "El peso de una armadura sin refuerzo sera de 12kg." {
+		assert.equals(armaduraSinRefuerzo.pesoTotal(),12)
+	}
+	
+	// TODO: ¡faltan los dos ante ultimos test!
+	
+	test "Si Ursula decide deshacerse de la armadura con cota de malla, su peso total actual sera de 3" {
+		ursula.sacaArtefacto(armaduraConCota)
+		assert.equals(ursula.pesoTotalDeArtefactos(),3)
+	}
+}

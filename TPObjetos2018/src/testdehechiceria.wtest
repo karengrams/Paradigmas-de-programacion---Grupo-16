@@ -5,8 +5,13 @@ import Personaje.*
 
 describe "Tests sobre hechiceria" {
 
+	// HECHIZOS 
+	const hechizoDeLogos = new Logo(nombre='Espectro malefico',multiplo=3)
 	const espectroMalefico = new Logo (nombre='Espectro malefico')
-	const rolando = new Personaje(artefactos=[],hechizoPreferido=espectroMalefico)
+	
+	// PERSONAJES
+	const furibunda = new Personaje(artefactos=[],hechizoPreferido=hechizoComercial,limiteDeCarga=200)
+	const rolando = new Personaje(artefactos=[],hechizoPreferido=espectroMalefico,limiteDeCarga=200)
 	
 	test "Si Rolando tiene como hechizo preferido 'especto malefico', su nivel de hechiceria sera de 56" {
 		assert.equals(rolando.nivelDeHechiceria(),56)
@@ -38,5 +43,19 @@ describe "Tests sobre hechiceria" {
 	
 	test "El hechizo basico NO es un hechizo poderoso" {
 		assert.notThat(hechizoBasico.sosPoderoso())
+	}
+	
+	// ENTREGA 3
+	
+	test "Si Furibunda tiene como hechizo preferido el hechizo comercial, su nivel de hechiceria sera de 29" {
+		assert.equals(furibunda.nivelDeHechiceria(),29)
+	}
+	
+	test "El hechizo comercial no es poderoro"{
+		assert.notThat(hechizoComercial.sosPoderoso())
+	}
+	
+	test "El hechizo de locos es poderoro"{
+		assert.that(hechizoDeLogos.sosPoderoso())
 	}
 }

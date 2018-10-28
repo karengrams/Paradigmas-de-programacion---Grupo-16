@@ -11,6 +11,8 @@ class Personaje{
 	var property baseDeLucha = 1
 	const property artefactos = []
 	
+	const property limiteDeCarga
+	
 	method baseDeHechiceria()=3
 		
 	method nivelDeHechiceria()= self.baseDeHechiceria() * hechizoPreferido.poder() + fuerzaOscura.poder()
@@ -54,6 +56,7 @@ class Personaje{
  		
  	method compraArtefacto(artefactoNuevo){
  		self.lanzaExcepcionSi(self.noPodesComprarArtefacto(artefactoNuevo),'No te alcanzan las monedas de oro para adquirir el nuevo artefacto. Cumpli objetivos para aumentar tus monedas de oro.')
+ 		self.lanzaExcepcionSi(self.superasTuCargaMaximaAgregando(artefactoNuevo),'Superas la carga maxima establecida, ¡deshacete de algun artefacto!')
  		self.agregaArtefacto(artefactoNuevo)
  		self.monedasDeOro(self.monedasDeOro()-artefactoNuevo.valor())
  	}
@@ -63,11 +66,14 @@ class Personaje{
  	method noPodesComprarArtefacto(artefacto)=self.podesComprarArtefacto(artefacto).negate()
  	
 	method cumpleObjetivo()=self.monedasDeOro(self.monedasDeOro()+10)
+
+	method superasTuCargaMaximaAgregando(artefactoNuevo)=artefactoNuevo.pesoTotal()+self.pesoTotalDeArtefactos()>self.limiteDeCarga()
 	
+	method pesoTotalDeArtefactos()=self.artefactos().sum({artefacto => artefacto.pesoTotal()})
+
 	method lanzaExcepcionSi(condicion, mensaje){
    		if(condicion){ throw new NoSePuedeComprarOCanjear(mensaje) }
-   	}
-
+   	}	
 }
 
 class NoSePuedeComprarOCanjear inherits Exception{}

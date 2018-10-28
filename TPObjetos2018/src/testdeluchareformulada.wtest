@@ -7,8 +7,8 @@ describe "Test de lucha reformulada"{
 	
 	// ARTEFACTOS
 	
-	const mascaraOscura = new Mascara(indiceDeOscuridad=1,minimoDeMascara=4)
-	const espadaDelDestino = new Arma()
+	const mascaraOscura = new Mascara(indiceDeOscuridad=1,minimoDeMascara=4,pesoMascara=0)
+	const espadaDelDestino = new Arma(pesoArma=0)
 	
 	// HECHIZOS
 	
@@ -17,7 +17,7 @@ describe "Test de lucha reformulada"{
 	
 	// PERSONAJES
 	
-	const rolando = new Personaje(artefactos=[mascaraOscura,espadaDelDestino,collarDivino],hechizoPreferido=espectroMalefico)
+	const rolando = new Personaje(artefactos=[mascaraOscura,espadaDelDestino,collarDivino],hechizoPreferido=espectroMalefico,limiteDeCarga=200)
 	
 	fixture{
 		collarDivino.perlas(5)
@@ -53,12 +53,12 @@ describe "Test de lucha reformulada"{
 	}
 	
 	test "Si Rolando tiene solamente una mascara inservible, la unidad de lucha de la misma sera de 4"{
-		const mascaraInservible = new Mascara(indiceDeOscuridad=0,minimoDeMascara=4)
+		const mascaraInservible = new Mascara(indiceDeOscuridad=0,minimoDeMascara=4,pesoMascara=0)
 		assert.equals(mascaraInservible.unidadDeLucha(rolando),4)
 	}
 	
 	test "Si Rolando tiene solamente una mascara inservible cuyo minimo es 2, la unidad de lucha de la misma sera de 2"{
-		const mascaraInservible = new Mascara(indiceDeOscuridad=0,minimoDeMascara=2)
+		const mascaraInservible = new Mascara(indiceDeOscuridad=0,minimoDeMascara=2,pesoMascara=0)
 		assert.equals(mascaraInservible.unidadDeLucha(rolando),2)
 	}
 	

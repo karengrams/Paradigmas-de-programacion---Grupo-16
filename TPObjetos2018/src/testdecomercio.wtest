@@ -4,23 +4,23 @@ import artefactos.*
 import Personaje.*
 
 describe "Test de comercio" {
-	
+		
 	// HECHIZOS
 	const hechizoDeLogos = new Logo(nombre='alacachula cachicomula',multiplo=1)
 	
 	// ARTEFACTOS
 	const espada = new Arma()
-	const armaduraConCota = new Armadura(refuerzo=new CotaDeMalla(unidadLucha=5))
+	const armaduraConCota = new Armadura(refuerzo=new CotaDeMalla(unidadLucha=5),pesoArmadura=0)
 	const armaduraSinRefuerzo = new Armadura()
-	const armaduraConAlacachula = new Armadura(refuerzo=hechizoDeLogos)
-	const armaduraConBendicion = new Armadura(refuerzo=bendicion)
+	const armaduraConAlacachula = new Armadura(refuerzo=hechizoDeLogos,pesoArmadura=0)
+	const armaduraConBendicion = new Armadura(refuerzo=bendicion,pesoArmadura=0)
 	const libroDeHechizos= new LibroDeHechizos(listaDeHechizos=[hechizoBasico,hechizoDeLogos])
 	
 
 	// PERSONAJES
-	const thor = new Personaje(artefactos=[],hechizoPreferido=hechizoBasico)
-	const loki = new Personaje(artefactos=[],monedasDeOro=5,hechizoPreferido=hechizoBasico)
-	const xenia = new Personaje(artefactos=[],hechizoPreferido=hechizoDeLogos)
+	const thor = new Personaje(artefactos=[],hechizoPreferido=hechizoBasico,limiteDeCarga=200)
+	const loki = new Personaje(artefactos=[],monedasDeOro=5,hechizoPreferido=hechizoBasico,limiteDeCarga=200)
+	const xenia = new Personaje(artefactos=[],hechizoPreferido=hechizoDeLogos,limiteDeCarga=200)
 	
 	fixture{
 		collarDivino.perlas(5)
