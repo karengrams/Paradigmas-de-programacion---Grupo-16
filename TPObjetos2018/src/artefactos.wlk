@@ -24,7 +24,7 @@ object collarDivino{
 class Mascara inherits Artefacto{
 	var property indiceDeOscuridad
 
-	var property minimoDeMascara
+	var property minimoDeMascara = 4
 	
 	override method unidadDeLucha(unPersonaje) = self.minimoDeUnidadDeLuchaSegunMascara(self.cantidadDeUnidadDeLucha())
 		
