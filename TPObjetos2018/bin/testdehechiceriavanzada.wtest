@@ -4,18 +4,23 @@ import artefactos.*
 import Personaje.*
 
 describe "Test de lucha y hechicería avanzada" {
-
+	// HECHIZOS
 	const espectroMalefico = new Logo (nombre='Espectro malefico')
-	const mascaraOscura = new Mascara(indiceDeOscuridad=1,minimo=4)
+
+	// ARTEFACTOS
+	
+	const mascaraOscura = new Mascara(indiceDeOscuridad=1,minimoDeMascara=4,pesoMascara=0)
 	const espadaDelDestino = new Arma()
 	const armadura = new Armadura()
-	const rolando = new Personaje(artefactos=[espadaDelDestino,mascaraOscura,collarDivino,armadura],hechizoPreferido=espectroMalefico)
-	const espejo = new Espejo(duenio=rolando)
 	const libroDeHechizos = new LibroDeHechizos()
+
+	// PERSONAJES
+
+	const rolando = new Personaje(artefactos=[espadaDelDestino,mascaraOscura,collarDivino,armadura,espejo],hechizoPreferido=espectroMalefico,limiteDeCarga=200)
+
 
 	fixture{
 		collarDivino.perlas(5)
-		rolando.agregaArtefacto(espejo)
 	}
 
 	test "Si Rolando tiene menos de 5 artefactos, esta armado" {
@@ -37,25 +42,24 @@ describe "Test de lucha y hechicería avanzada" {
 	}
 	
 	test "Si la armadura tiene como resfuerzo la bendicion, su nivel de lucha sera de 58" {
-		const bendicion = new Bendicion(rolando)
 		armadura.refuerzo(bendicion)
-		assert.equals(armadura.unidadDeLucha(),58)
+		assert.equals(armadura.unidadDeLucha(rolando),58)
 	}
 	
 	test "Si la armadura tiene como resfuerzo la cota de malla, su nivel de lucha sera de 3" {
-		const cotaDeMalla= new CotaDeMalla(unidadDeLucha=1)
+		const cotaDeMalla= new CotaDeMalla(unidadLucha=1)
 		armadura.refuerzo(cotaDeMalla)
-		assert.equals(armadura.unidadDeLucha(),3)
+		assert.equals(armadura.unidadDeLucha(rolando),3)
 	}
 	
 	test "Si la armadura tiene como resfuerzo el hechizo 'basico', su nivel de lucha sera de 12" {
 		armadura.refuerzo(hechizoBasico)
-		assert.equals(armadura.unidadDeLucha(),12)
+		assert.equals(armadura.unidadDeLucha(rolando),12)
 	}
 	
 	test "Si la armadura tiene como resfuerzo el hechizo 'espectro malefico', su nivel de lucha sera de 19" {
 		armadura.refuerzo(espectroMalefico)
-		assert.equals(armadura.unidadDeLucha(),19)
+		assert.equals(armadura.unidadDeLucha(rolando),19)
 	}
 	
 	test "Si Rolando tiene solamente el espejo , su nivel de lucha sera de 1" {
@@ -69,5 +73,12 @@ describe "Test de lucha y hechicería avanzada" {
 		assert.equals(rolando.nivelDeHechiceria(),56)
 	}
 	
+	test "Si se le agrega otra armadura con refuerzo una cota de malla de 6 unidades de lucha y base 5 a Rolando, tendra como nivel de lucha 37"{
+		const cotaDeMallaExtra = new CotaDeMalla(unidadLucha=6)
+		const armaduraExtra=new Armadura(refuerzo=cotaDeMallaExtra,valorBase=5, pesoArmadura= 0)
+		armaduraExtra.refuerzo(cotaDeMallaExtra)
+		rolando.agregaArtefacto(armaduraExtra)
+		assert.equals(rolando.nivelDeLucha(),37)
+	}
 	
 }
