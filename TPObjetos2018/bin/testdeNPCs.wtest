@@ -1,0 +1,29 @@
+import fuerzaOscura.*
+import hechizos.*
+import artefactos.*
+import Personaje.*
+import Comerciante.*
+
+describe "testdeNPCs" {
+
+	// ARTEFACTOS
+	const mascaraClara = new Mascara(indiceDeOscuridad=0,pesoMascara=2)
+
+	// PERSONAJES
+	const navi = new PersonajeNoControlado(dificultad=facil,artefactos=[],monedasDeOro=100,limiteDeCarga=200, hechizoPreferido=hechizoComercial)
+	const ashleyGraham = new PersonajeNoControlado(dificultad=moderado,artefactos=[mascaraClara],baseDeLucha=5,limiteDeCarga=200, hechizoPreferido=hechizoComercial)
+	
+	test "El nivel de lucha de Navi es 1" {
+		assert.equals(navi.nivelDeLucha(),1)
+	}
+	
+	test "El nivel de lucha de Ashley Graham es 18" {
+		assert.equals(ashleyGraham.nivelDeLucha(),18)
+	}
+	
+	test "Luego de pasar a Ashley Graham a dificultad dificil, su nivel de lucha es 36" {
+		ashleyGraham.dificultad(dificil)
+		assert.equals(ashleyGraham.nivelDeLucha(),36)
+	}
+
+}

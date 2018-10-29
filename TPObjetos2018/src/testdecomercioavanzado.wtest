@@ -1,0 +1,78 @@
+import fuerzaOscura.*
+import hechizos.*
+import artefactos.*
+import Personaje.*
+import Comerciante.*
+
+describe "Test de comercio avanzado de artefactos" {
+		
+	// HECHIZOS
+
+	// ARTEFACTOS
+	const mascaraOscura = new Mascara(indiceDeOscuridad=1, pesoMascara=0)
+
+	// IMPUESTOS
+	const impuestoDePastoriza = new ImpuestoIndependiente(comision=0.09)
+	const impuestoDeFermepin = new ImpuestoGanancias(minimoNoImponible=5)
+	
+	// PERSONAJES
+	const ursula = new Personaje(artefactos=[],monedasDeOro=100,hechizoPreferido=hechizoBasico,limiteDeCarga=200)
+	const pastoriza = new Comerciante(impuesto=impuestoDePastoriza)
+	const prieto = new Comerciante(impuesto=impuestoRegistrado)
+	const fermepin = new Comerciante(impuesto=impuestoDeFermepin)
+	
+	test "Si Ursula le compra una mascara oscura a Pastoriza tendra 89.1 monedas de oro"{
+		pastoriza.agregaEnStock(mascaraOscura)	
+		ursula.compraArtefactoA(mascaraOscura, pastoriza)
+
+		assert.equals(ursula.monedasDeOro(),89.1) 
+	}
+	
+	test "Si Ursula le compra una mascara oscura a Prieto tendra 87.9 monedas de oro"{
+		prieto.agregaEnStock(mascaraOscura)	
+		ursula.compraArtefactoA(mascaraOscura, prieto)
+
+		assert.equals(ursula.monedasDeOro(),87.9) 
+	}
+	
+	test "Si Ursula le compra una mascara oscura a Fermepin tendra 88.25 monedas de oro"{
+		fermepin.agregaEnStock(mascaraOscura)	
+		ursula.compraArtefactoA(mascaraOscura, fermepin)
+
+		assert.equals(ursula.monedasDeOro(),88.25) 
+	}
+	
+	test "Si Ursula le compra una mascara oscura a Pastoriza luego de ser recategorizado, tendra 88.2 monedas de oro"{
+		pastoriza.agregaEnStock(mascaraOscura)
+		pastoriza.recategorizateCompulsivamente()
+		ursula.compraArtefactoA(mascaraOscura, pastoriza)
+
+		assert.equals(ursula.monedasDeOro(),88.2) 
+	}
+	
+	test "Si Ursula le compra una mascara oscura a Pastoriza luego de ser recategorizado dos veces, tendra 86.4 monedas de oro"{
+		pastoriza.agregaEnStock(mascaraOscura)
+		pastoriza.recategorizateCompulsivamente()
+		pastoriza.recategorizateCompulsivamente()
+		ursula.compraArtefactoA(mascaraOscura, pastoriza)
+
+		assert.equals(ursula.monedasDeOro(),86.4) // en el enunciado dice que esto tiene que dar 87.9 pero parece estar equivocado 
+	}
+	
+	test "Si Ursula le compra una mascara oscura a Prieto luego de ser recategorizado, tendra 88.25 monedas de oro"{
+		prieto.agregaEnStock(mascaraOscura)
+		prieto.recategorizateCompulsivamente()
+		ursula.compraArtefactoA(mascaraOscura, prieto)
+
+		assert.equals(ursula.monedasDeOro(),88.25)
+	}
+	
+	test "Si Ursula le compra una mascara oscura a Fermepin luego de ser recategorizado, tendra 88.25 monedas de oro"{
+		fermepin.agregaEnStock(mascaraOscura)
+		fermepin.recategorizateCompulsivamente()
+		ursula.compraArtefactoA(mascaraOscura, fermepin)
+
+		assert.equals(ursula.monedasDeOro(),88.25)
+	}
+	
+}

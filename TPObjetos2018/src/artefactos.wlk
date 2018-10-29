@@ -21,7 +21,7 @@ class Arma inherits Artefacto{
 	
 	override method unidadDeLucha(unPersonaje)=self.unidadLucha()
 	
-	override method valor()=self.unidadLucha(self)*5 
+	override method valor()=self.pesoArma()*5
 	
 	override method peso()=self.pesoArma()
 	 
@@ -52,7 +52,7 @@ class Mascara inherits Artefacto{
 	
 	method minimoDeUnidadDeLuchaSegunMascara(valor)=valor.max(self.minimoDeMascara())
 	
-	override method valor()=0
+	override method valor()= 10 * self.indiceDeOscuridad()
 		
 	override method pesoTotal()=super()+self.pesoAdicionalMascara()
 	

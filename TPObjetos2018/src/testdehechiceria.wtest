@@ -51,11 +51,11 @@ describe "Tests sobre hechiceria" {
 		assert.equals(furibunda.nivelDeHechiceria(),29)
 	}
 	
-	test "El hechizo comercial no es poderoro"{
+	test "El hechizo comercial no es poderoso"{
 		assert.notThat(hechizoComercial.sosPoderoso())
 	}
 	
-	test "El hechizo de locos es poderoro"{
+	test "El hechizo de logos es poderoso"{
 		assert.that(hechizoDeLogos.sosPoderoso())
 	}
 }
