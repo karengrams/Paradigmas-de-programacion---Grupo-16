@@ -1,132 +1,143 @@
 import Personaje.*
 import fuerzaOscura.*
 import hechizos.*
+import refuerzos.*
 
 // ARTEFACTOS
+class Artefacto {
 
-class Artefacto{
 	const property fechaDeCompra = new Date()
-	method peso() = 0 /* Si se coloca una property aca, entonces, se podra "modificar" el peso de cualquier artefacto, 
-	* sin embargo, el libro de hechizos no tiene peso, suena ilogico poder cambiarle el peso pero luego a la hora de
-	* preguntarle el mismo, que siempre devuelva 0.  */
+
+	method peso() = 0
+
 	method valor()
+
 	method unidadDeLucha(unPersonaje)
-	method pesoTotal()=self.peso()-self.factorDeCorrecion()
-	method factorDeCorrecion() = ((new Date() - self.fechaDeCompra())/1000).min(1)
+
+	method pesoTotal() = self.peso() - self.factorDeCorrecion()
+
+	method factorDeCorrecion() = ((new Date() - self.fechaDeCompra()) / 1000).min(1)
+
+	method teCompra(personaje) {
+		personaje.lanzaExcepcionSi(personaje.superasTuCargaMaximaAgregando(self), 'Superas la carga maxima establecida, ¡deshacete de algun artefacto!')
+		personaje.agregaArtefacto(self)
+		personaje.monedasDeOro(personaje.monedasDeOro() - self.valor())
+	}
+
 }
 
-class Arma inherits Artefacto{
-	var property unidadLucha=3
-	var property pesoArma
-	
-	override method unidadDeLucha(unPersonaje)=self.unidadLucha()
-	
-	override method valor()=self.pesoArma()*5
-	
-	override method peso()=self.pesoArma()
-	 
-	//  No tienen peso adicional
+class Arma inherits Artefacto {
+
+	var property unidadLucha = 3
+	var property pesoArma = 0
+
+	override method unidadDeLucha(unPersonaje) = self.unidadLucha()
+
+	override method valor() = self.unidadLucha() * 5
+
+	override method peso() = self.pesoArma()
+
 }
 
-object collarDivino inherits Artefacto{	
+object collarDivino inherits Artefacto {
+
 	var property perlas = 1
-	
-	override method unidadDeLucha(unPersonaje)= self.perlas()
-	
-	override method valor()=2*self.perlas()
-	
-	override method pesoTotal()= super()+self.perlas()*0.5
-	
+
+	override method unidadDeLucha(unPersonaje) = self.perlas()
+
+	override method valor() = 2 * self.perlas()
+
+	override method pesoTotal() = super() + self.perlas() * 0.5
+
 }
 
-class Mascara inherits Artefacto{
+class Mascara inherits Artefacto {
+
 	var property indiceDeOscuridad
 	var property minimoDeMascara = 4
 	var property pesoMascara
-	
-	override method unidadDeLucha(unPersonaje) = self.unidadDeLucha()
-	
-	method unidadDeLucha() = self.minimoDeUnidadDeLuchaSegunMascara(self.cantidadDeUnidadDeLucha())
-		
-	method cantidadDeUnidadDeLucha()=fuerzaOscura.poder()/2*self.indiceDeOscuridad()
-	
-	method minimoDeUnidadDeLuchaSegunMascara(valor)=valor.max(self.minimoDeMascara())
-	
-	override method valor()= 10 * self.indiceDeOscuridad()
-		
-	override method pesoTotal()=super()+self.pesoAdicionalMascara()
-	
-	override method peso()=self.pesoMascara()
-	
-	method pesoAdicionalMascara()=(self.unidadDeLucha()-3).max(0)
+
+	override method unidadDeLucha(unPersonaje) = self.unidadLucha()
+
+	method unidadLucha() = self.minimoDeUnidadDeLuchaSegunMascara(self.cantidadDeUnidadDeLucha())
+
+	method cantidadDeUnidadDeLucha() = fuerzaOscura.poder() / 2 * self.indiceDeOscuridad()
+
+	method minimoDeUnidadDeLuchaSegunMascara(valor) = valor.max(self.minimoDeMascara())
+
+	override method valor() = 10*self.indiceDeOscuridad()
+
+	override method pesoTotal() = super() + self.pesoAdicionalMascara()
+
+	override method peso() = self.pesoMascara()
+
+	method pesoAdicionalMascara() = (self.unidadLucha() - 3).max(0)
+
 }
 
-/* ¿Por que un objeto? Porque no tiene estado interno el cual guarde quien es su duenio, por ende, resulta innecesario la 
- * existencia de muchos espejos, con un solo objeto espejo, es suficiente.
- */
+// ¿Por que un objeto? Porque no tiene estado interno el cual guarde quien es su duenio, por ende, resulta innecesario la existencia de muchos espejos, con un solo objeto espejo, es suficiente.
+object espejo inherits Artefacto {
 
-object espejo inherits Artefacto{
 	var property pesoEspejo
-	
-	override method unidadDeLucha(unPersonaje){
-		if(unPersonaje.artefactos().filter({artefacto => artefacto!=self}).isEmpty()) {return 0}
-		else{
-			return self.elMejorArtefacto(self.eliminarEspejo(unPersonaje.artefactos()),unPersonaje).unidadDeLucha(unPersonaje) 
+
+	override method unidadDeLucha(unPersonaje) {
+		if (unPersonaje.artefactos().filter({ artefacto => artefacto != self }).isEmpty()) {
+			return 0
+		} else {
+			return self.elMejorArtefacto(self.eliminarEspejo(unPersonaje.artefactos()), unPersonaje).unidadDeLucha(unPersonaje)
 		}
 	}
-	
-	method eliminarEspejo(artefactos)=artefactos.filter({artefacto=>artefacto!=self})
-	
-	method elMejorArtefacto(unosArtefactos,unPersonaje)=unosArtefactos.max({artefacto=>artefacto.unidadDeLucha(unPersonaje)})
-	
-	override method valor()=90
-	
-	override method peso()=self.pesoEspejo()
-	
-	// No tienen peso adicional
 
+	method eliminarEspejo(artefactos) = artefactos.filter({ artefacto => artefacto != self })
+
+	method elMejorArtefacto(unosArtefactos, unPersonaje) = unosArtefactos.max({ artefacto => artefacto.unidadDeLucha(unPersonaje) })
+
+	override method valor() = 90
+
+	override method peso() = self.pesoEspejo()
+
+// No tienen peso adicional
 }
 
-class Armadura inherits Artefacto{
+class Armadura inherits Artefacto {
+
 	var property refuerzo = ninguno
 	var property valorBase = 2
-	var property pesoArmadura
-	
-	override method valor()=refuerzo.valorDeRefuerzo(self)
+	var property pesoArmadura = 0
 
-	override method unidadDeLucha(unPersonaje)= self.refuerzo().unidadDeLucha(unPersonaje)+self.valorBase()
-	
-	override method pesoTotal()=super()+refuerzo.pesoDeRefuerzo()
-	
-	override method peso()=self.pesoArmadura()
-	
-}
+	override method valor() = refuerzo.valorDeRefuerzo(self)
 
-// REFUERZOS
+	override method unidadDeLucha(unPersonaje) = self.refuerzo().unidadDeLucha(unPersonaje) + self.valorBase()
 
-class Refuerzo{
-	method unidadDeLucha(unPersonaje)
-	method valorDeRefuerzo(unaArmadura)
-	method pesoDeRefuerzo()=0
-}
+	override method pesoTotal() = super() + refuerzo.pesoDeRefuerzo()
 
-class CotaDeMalla inherits Refuerzo{
-	var property unidadLucha
-		
-	override method unidadDeLucha(unJugador)=self.unidadLucha()
-
-	override method valorDeRefuerzo(unaArmadura)=self.unidadLucha()/2
-	
-	override method pesoDeRefuerzo()=1
-}
- 
-object bendicion inherits Refuerzo{
-	override method valorDeRefuerzo(unaArmadura)=unaArmadura.valorBase()
-	override method unidadDeLucha(unPersonaje) = unPersonaje.nivelDeHechiceria()
-}
-
-object ninguno inherits Refuerzo{
-	override method valorDeRefuerzo(unValorBase)=2
-	override method unidadDeLucha(unPersonaje)=0
+	override method peso() = self.pesoArmadura()
 
 }
+
+// A diferencia del espejo, un libro de hechizos si necesita ser una clase, ¿por que? Porque el libro tiene estado interno, el cual, dependiendo de los hechizos que se tenga, dara cierta cantidad de nivel de hechiceria al personaje.
+// Si el libro de hechizos se tiene a si mismo, se produciria un loop infinito, por ende, hay que sacarlo como se hizo con el espejo.
+class LibroDeHechizos inherits Artefacto {
+
+	const property listaDeHechizos = []
+
+	method nuevosHechizos(nuevosHechizos) {
+		listaDeHechizos.clear()
+		listaDeHechizos.addAll(nuevosHechizos.filter({ artefacto => artefacto != self}))
+	}
+
+	method listaDeHechizosPoderosos() = listaDeHechizos.filter({ hechizo => hechizo.sosPoderoso() })
+
+	method poder() = self.listaDeHechizosPoderosos().sum({ hechizo => hechizo.poder() }) // Esto usa el personaje para saber su poder
+
+	override method valor() = self.listaDeHechizos().size() * 10 + self.poder()
+
+	override method unidadDeLucha(unPersonaje) = 0 // Los tests chillan si no esta esta linea.
+
+	override method teCompra(personaje) {
+		personaje.monedasDeOro(personaje.monedasDeOro().min(personaje.monedasDeOro() + personaje.valorDeHechizoPreferido() - self.valor()))
+		personaje.hechizoPreferido(self)
+	}
+
+}
+

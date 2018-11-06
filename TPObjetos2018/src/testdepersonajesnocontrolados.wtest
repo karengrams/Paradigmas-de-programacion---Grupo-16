@@ -1,0 +1,37 @@
+import fuerzaOscura.*
+import hechizos.*
+import artefactos.*
+import Personaje.*
+import refuerzos.*
+import NPCs.*
+
+describe "Tests de personajes no controlados" {
+
+	const navi = new PersonajeNoControlado()
+	const ashleyGraham = new PersonajeNoControlado()
+	const mascaraClara = new Mascara(indiceDeOscuridad=0,minimoDeMascara=4,pesoMascara=2)
+	
+	
+	fixture{
+		navi.dificultad(facil)
+		ashleyGraham.baseDeLucha(5)
+		ashleyGraham.agregaArtefacto(mascaraClara)
+		ashleyGraham.dificultad(moderada)
+	}
+
+	test "La habilidad de lucha de Navi sera de 1." {
+
+		assert.equals(navi.nivelDeLucha(),1)
+
+	}
+	
+	test "La habilidad de lucha de Navi sera de 18."{
+		assert.equals(ashleyGraham.nivelDeLucha(),18)
+	}
+	
+	test "Si Ashley cambia su dificultad moderada por una dificultad dificil, su habilidad de lucha sera 36."{
+		ashleyGraham.dificultad(dificil)
+		assert.equals(ashleyGraham.nivelDeLucha(),36)
+	}
+	
+}

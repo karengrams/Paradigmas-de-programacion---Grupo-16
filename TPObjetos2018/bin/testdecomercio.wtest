@@ -2,118 +2,87 @@ import fuerzaOscura.*
 import hechizos.*
 import artefactos.*
 import Personaje.*
+import refuerzos.*
 import Comerciante.*
 
 describe "Test de comercio" {
-		
-	// HECHIZOS
-	const hechizoDeLogos = new Logo(nombre='alacachula cachicomula',multiplo=1)
-	
-	// ARTEFACTOS
-	const espada = new Arma(pesoArma=0)
-	const armaduraConCota = new Armadura(refuerzo=new CotaDeMalla(unidadLucha=5),pesoArmadura=0,pesoArmadura=10)
-	const armaduraSinRefuerzo = new Armadura(pesoArmadura=12)
-	const armaduraConAlacachula = new Armadura(refuerzo=hechizoDeLogos,pesoArmadura=0)
-	const armaduraConBendicion = new Armadura(refuerzo=bendicion,pesoArmadura=0)
-	const libroDeHechizos= new LibroDeHechizos(listaDeHechizos=[hechizoBasico,hechizoDeLogos])
-	
 
+	// HECHIZOS
+	const hechizoDeLogos = new Logo(nombre = 'alacachula cachicomula', multiplo = 1)
+	// ARTEFACTOS
+	const espada = new Arma()
+	const armaduraConCota = new Armadura(refuerzo = new CotaDeMalla(unidadLucha = 5), pesoArmadura = 0)
+	const armaduraSinRefuerzo = new Armadura()
+	const armaduraConAlacachula = new Armadura(refuerzo = hechizoDeLogos, pesoArmadura = 0)
+	const armaduraConBendicion = new Armadura(refuerzo = bendicion, pesoArmadura = 0)
+	const libroDeHechizos = new LibroDeHechizos(listaDeHechizos = [ hechizoBasico, hechizoDeLogos ])
 	// PERSONAJES
-	const thor = new Personaje(artefactos=[],monedasDeOro=100,hechizoPreferido=hechizoBasico,limiteDeCarga=200)
-	const loki = new Personaje(artefactos=[],monedasDeOro=5,hechizoPreferido=hechizoBasico,limiteDeCarga=200)
-	const xenia = new Personaje(artefactos=[],monedasDeOro=100, hechizoPreferido=hechizoDeLogos,limiteDeCarga=200)
-	const mockHnos = new Comerciante(impuesto=impuestoRegistrado)
-	
-	fixture{
+	const thor = new Personaje(artefactos = [], hechizoPreferido = hechizoBasico, limiteDeCarga = 200)
+	const loki = new Personaje(artefactos = [], monedasDeOro = 5, hechizoPreferido = hechizoBasico, limiteDeCarga = 200)
+	const xenia = new Personaje(artefactos = [], hechizoPreferido = hechizoDeLogos, limiteDeCarga = 200)
+	// COMERCIANTE
+	const mockHnos = new Comerciante(tipoDeImpuesto = new ImpuestoDeComercianteIndependiente(comision = 0))
+
+	fixture {
 		collarDivino.perlas(5)
 	}
-	
+
 	test "El valor de lista del hechizo de logos es de 22" {
-		assert.equals(hechizoDeLogos.valor(),22)
+		assert.equals(hechizoDeLogos.valor(), 22)
 	}
-	
-	test "Si Xenia canjea su hechizo preferido por el hechizo basico, no se le descontara ninguna moneda"{
-		xenia.canjeaHechizo(hechizoBasico)
-		assert.equals(xenia.monedasDeOro(),100)
+
+	test "Si Xenia canjea su hechizo preferido por el hechizo basico, no se le descontara ninguna moneda" {
+		xenia.compra(hechizoBasico)
+		assert.equals(xenia.monedasDeOro(), 100)
 	}
-	
-	test "Si Thor canjea su hechizo preferido por el hechizo de logos, su monedas quedaran en 83"{
-		thor.canjeaHechizo(hechizoDeLogos)
-		assert.equals(thor.monedasDeOro(),83)
+
+	test "Si Thor canjea su hechizo preferido por el hechizo de logos, su monedas quedaran en 83" {
+		thor.compra(hechizoDeLogos)
+		assert.equals(thor.monedasDeOro(), 83)
 	}
-	
-	test "Si Thor canjea dos veces el hechizo basico, su monedas quedaran en 90"{
-		thor.canjeaHechizo(hechizoBasico)
-		thor.canjeaHechizo(hechizoBasico)
-		assert.equals(thor.monedasDeOro(),90)
+
+	test "Si Thor canjea dos veces el hechizo basico, su monedas quedaran en 90" {
+		thor.compra(hechizoBasico)
+		thor.compra(hechizoBasico)
+		assert.equals(thor.monedasDeOro(), 90)
 	}
-	
-	test "Si Loki canjea su hechizo por el hechizo de logos, no podra"{
-		const excepcionEsperada = new NoSePuedeComprarOCanjear('Ni tu hechizo preferido ni tus monedas de oro abarca las monedas necesarias para canjear el hechizo solicitado. Cumpli objetivos para aumentar las monedas de oro.')
-		assert.throwsExceptionLike(excepcionEsperada, {loki.canjeaHechizo(hechizoDeLogos)})	
+
+	test "Si Loki canjea su hechizo por el hechizo de logos, no podra" {
+		const excepcionEsperada = new NoSePuedeComprarOCanjear('No te alcanzan las monedas de oro para adquirir el nuevo artefacto. Cumpli objetivos para aumentar tus monedas de oro.')
+		assert.throwsExceptionLike(excepcionEsperada, { loki.compra(hechizoDeLogos)})
 	}
-	
-	/* //modificado por entrega 3
-	test "Si Xenia compra una espada, un collar divino con cinco perlas, una armadura sin refuerzo y otra con cota de malla (con 5 unidades de lucha), tendra 70,5 monedas de oro"{
-		xenia.compraArtefacto(espada)
-		xenia.compraArtefacto(collarDivino)
-		xenia.compraArtefacto(armaduraSinRefuerzo)
-		xenia.compraArtefacto(armaduraConCota)
-		assert.equals(xenia.monedasDeOro(),70.5)
+
+	test "Si Xenia compra una espada, un collar divino con cinco perlas, una armadura sin refuerzo y otra con cota de malla (con 5 unidades de lucha), tendra 70,5 monedas de oro" {
+		xenia.compraA(mockHnos, espada)
+		xenia.compraA(mockHnos, collarDivino)
+		xenia.compraA(mockHnos, armaduraSinRefuerzo)
+		xenia.compraA(mockHnos, armaduraConCota)
+		assert.equals(xenia.monedasDeOro(), 70.5)
 	}
-	*/
-	
-	test "Si Xenia compra una espada, un collar divino con cinco perlas, una armadura sin refuerzo y otra con cota de malla (con 5 unidades de lucha) a Mock Hnos, tendra 82.455 monedas de oro"{
-		mockHnos.agregaEnStock(espada)
-		mockHnos.agregaEnStock(collarDivino)
-		mockHnos.agregaEnStock(armaduraSinRefuerzo)
-		mockHnos.agregaEnStock(armaduraConCota)
-		
-		xenia.compraArtefactoA(espada, mockHnos)
-		xenia.compraArtefactoA(collarDivino, mockHnos)
-		xenia.compraArtefactoA(armaduraSinRefuerzo, mockHnos)
-		xenia.compraArtefactoA(armaduraConCota, mockHnos)
-		assert.equals(xenia.monedasDeOro(),82.455) //el enunciado dice 85.5 pero no tiene en cuenta el 21% de impuesto que cobra mockHnos
-	}	
-	
-	/*
-	test "Si Xenia compra una espada, un collar divino con cinco perlas, una armadura sin refuerzo y otra con cota de malla (con 5 unidades de lucha), tendra 4 artefactos y no estara cargada"{
-		xenia.compraArtefacto(espada)
-		xenia.compraArtefacto(collarDivino)
-		xenia.compraArtefacto(armaduraSinRefuerzo)
-		xenia.compraArtefacto(armaduraConCota)
+
+	test "Si Xenia compra una espada, un collar divino con cinco perlas, una armadura sin refuerzo y otra con cota de malla (con 5 unidades de lucha), tendra 4 artefactos y no estara cargada" {
+		xenia.compraA(mockHnos, espada)
+		xenia.compraA(mockHnos, collarDivino)
+		xenia.compraA(mockHnos, armaduraSinRefuerzo)
+		xenia.compraA(mockHnos, armaduraConCota)
 		assert.notThat(xenia.estasCargado())
 	}
-	*/
 
-	test "Si Xenia compra una espada, un collar divino con cinco perlas, una armadura sin refuerzo y otra con cota de malla (con 5 unidades de lucha), tendra 4 artefactos"{
-		mockHnos.agregaEnStock(espada)
-		mockHnos.agregaEnStock(collarDivino)
-		mockHnos.agregaEnStock(armaduraSinRefuerzo)
-		mockHnos.agregaEnStock(armaduraConCota)
-		
-		xenia.compraArtefactoA(espada, mockHnos)
-		xenia.compraArtefactoA(collarDivino, mockHnos)
-		xenia.compraArtefactoA(armaduraSinRefuerzo, mockHnos)
-		xenia.compraArtefactoA(armaduraConCota, mockHnos)
-		
-		assert.equals(xenia.artefactos().size(),4)
-	}
-
-	test "Si Loki intenta comprar el espejo, no podra comprarlo ya que no tiene la cantidad suficiente de monedas. "{
+	test "Si Loki intenta comprar el espejo, no podra comprarlo ya que no tiene la cantidad suficiente de monedas. " {
 		const excepcionEsperada = new NoSePuedeComprarOCanjear('No te alcanzan las monedas de oro para adquirir el nuevo artefacto. Cumpli objetivos para aumentar tus monedas de oro.')
-		assert.throwsExceptionLike(excepcionEsperada,{loki.compraArtefacto(espejo)})
+		assert.throwsExceptionLike(excepcionEsperada, { loki.compra(espejo)})
 	}
-	
-	test "Si Thor compra una armadura con bendicion y otra que tiene como refuerzo el hechizo alacachula, tendra 74 monedas"{
-		thor.compraArtefacto(armaduraConAlacachula)
-		thor.compraArtefacto(armaduraConBendicion)
-		assert.equals(thor.monedasDeOro(),74)
+
+	test "Si Thor compra una armadura con bendicion y otra que tiene como refuerzo el hechizo alacachula, tendra 74 monedas" {
+		thor.compra(armaduraConAlacachula)
+		thor.compra(armaduraConBendicion)
+		assert.equals(thor.monedasDeOro(), 74)
 	}
-	
-	test "Si Xenia canjea un libro de hechizos que contiene al hechizo de logos y el hechizo basico, tendra 69 monedas de oro"{
-		xenia.canjeaHechizo(libroDeHechizos)
-		assert.equals(xenia.monedasDeOro(),69)
+
+	test "Si Xenia canjea un libro de hechizos que contiene al hechizo de logos y el hechizo basico, tendra 69 monedas de oro" {
+		xenia.compra(libroDeHechizos)
+		assert.equals(xenia.monedasDeOro(), 69)
 	}
-	
+
 }
+

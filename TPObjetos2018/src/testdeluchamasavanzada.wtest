@@ -2,6 +2,8 @@ import Personaje.*
 import hechizos.*
 import artefactos.*
 import fuerzaOscura.*
+import refuerzos.*
+
 
 describe "Test de lucha mas avanzada" {
 	

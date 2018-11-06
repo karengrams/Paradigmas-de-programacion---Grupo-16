@@ -2,6 +2,7 @@ import fuerzaOscura.*
 import hechizos.*
 import artefactos.*
 import Personaje.*
+import refuerzos.*
 
 describe "Test de lucha y hechicería avanzada" {
 	// HECHIZOS
