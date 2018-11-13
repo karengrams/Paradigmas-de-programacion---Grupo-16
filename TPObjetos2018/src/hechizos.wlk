@@ -1,6 +1,8 @@
 import artefactos.*
 
 class Hechizo {
+	
+	method descuento(personaje)=personaje.hechizoPreferido().valor()/2
 
 	method poder()
 
@@ -24,10 +26,6 @@ class Hechizo {
 	}
 	
 	method teCompra(personaje){
-		personaje.monedasDeOro(personaje.monedasDeOro().min(
-			personaje.monedasDeOro() + personaje.valorDeHechizoPreferido() - self.valor()
-			)
-		)
 		personaje.hechizoPreferido(self)
 	}
 

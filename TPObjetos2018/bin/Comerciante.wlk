@@ -5,16 +5,6 @@ class Comerciante {
 	method montoDelImpuestoAdicional(objetoAVender) = self.tipoDeImpuesto().impuestoAdicionalDe(objetoAVender)
 
 	method recategorizateCompulsivamente() = self.tipoDeImpuesto().recategorizaA(self)
-
-	/*
-	method tenes(unItem) = self.itemsDisponibles().contains(unItem)
-	
-	method vendiste(unItem) = self.itemsDisponibles().remove(unItem)	
-	
-	method agregaEnStock(unItem) = self.itemsDisponibles().add(unItem)
-	 
-	method noTenes(unItem) = self.tenes(unItem).negate()
-	*/
 	
 }
 

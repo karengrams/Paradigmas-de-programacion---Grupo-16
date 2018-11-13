@@ -5,9 +5,11 @@ import refuerzos.*
 
 // ARTEFACTOS
 class Artefacto {
-
+	
 	const property fechaDeCompra = new Date()
 
+	method descuento(personaje)=0
+	
 	method peso() = 0
 
 	method valor()
@@ -21,7 +23,6 @@ class Artefacto {
 	method teCompra(personaje) {
 		personaje.lanzaExcepcionSi(personaje.superasTuCargaMaximaAgregando(self), 'Superas la carga maxima establecida, ¡deshacete de algun artefacto!')
 		personaje.agregaArtefacto(self)
-		personaje.monedasDeOro(personaje.monedasDeOro() - self.valor())
 	}
 
 }
@@ -80,13 +81,14 @@ object espejo inherits Artefacto {
 
 	var property pesoEspejo
 
-	override method unidadDeLucha(unPersonaje) {
-		if (unPersonaje.artefactos().filter({ artefacto => artefacto != self }).isEmpty()) {
+	override method unidadDeLucha(personaje){
+		if(personaje.artefactosSinEspejo().isEmpty()){
 			return 0
-		} else {
-			return self.elMejorArtefacto(self.eliminarEspejo(unPersonaje.artefactos()), unPersonaje).unidadDeLucha(unPersonaje)
 		}
-	}
+		else{
+			return personaje.mejorArtefacto().unidadDeLucha(personaje)
+		}
+	} 
 
 	method eliminarEspejo(artefactos) = artefactos.filter({ artefacto => artefacto != self })
 
@@ -117,7 +119,7 @@ class Armadura inherits Artefacto {
 
 // A diferencia del espejo, un libro de hechizos si necesita ser una clase, ¿por que? Porque el libro tiene estado interno, el cual, dependiendo de los hechizos que se tenga, dara cierta cantidad de nivel de hechiceria al personaje.
 // Si el libro de hechizos se tiene a si mismo, se produciria un loop infinito, por ende, hay que sacarlo como se hizo con el espejo.
-class LibroDeHechizos inherits Artefacto {
+class LibroDeHechizos inherits Hechizo {
 
 	const property listaDeHechizos = []
 
@@ -128,16 +130,9 @@ class LibroDeHechizos inherits Artefacto {
 
 	method listaDeHechizosPoderosos() = listaDeHechizos.filter({ hechizo => hechizo.sosPoderoso() })
 
-	method poder() = self.listaDeHechizosPoderosos().sum({ hechizo => hechizo.poder() }) // Esto usa el personaje para saber su poder
+	override method poder() = self.listaDeHechizosPoderosos().sum({ hechizo => hechizo.poder() }) // Esto usa el personaje para saber su poder
 
 	override method valor() = self.listaDeHechizos().size() * 10 + self.poder()
-
-	override method unidadDeLucha(unPersonaje) = 0 // Los tests chillan si no esta esta linea.
-
-	override method teCompra(personaje) {
-		personaje.monedasDeOro(personaje.monedasDeOro().min(personaje.monedasDeOro() + personaje.valorDeHechizoPreferido() - self.valor()))
-		personaje.hechizoPreferido(self)
-	}
 
 }
 

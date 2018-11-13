@@ -44,23 +44,16 @@ class Personaje {
 	method canjeaHechizo(hechizoNuevo) {
 	}
 
-	method valorDeHechizoPreferido() = self.hechizoPreferido().valor() / 2
-
-	method compra(objetoAComprar) {
+	method compraA(unComerciante,objetoAComprar){
+		self.lanzaExcepcionSi(self.noLePodesComprar(unComerciante,objetoAComprar),'No te alcanzan las monedas de oro para adquirir el nuevo artefacto. Cumpli objetivos para aumentar tus monedas de oro.')
 		self.lanzaExcepcionSi(self.noPodesComprar(objetoAComprar), 'No te alcanzan las monedas de oro para adquirir el nuevo artefacto. Cumpli objetivos para aumentar tus monedas de oro.')
+		self.monedasDeOro((self.monedasDeOro()-unComerciante.montoDelImpuestoAdicional(objetoAComprar)-self.objetoConDescuento(objetoAComprar)))
 		objetoAComprar.teCompra(self)
 	}
 	
-	method compraA(unComerciante,objetoAComprar){
-		// self.lanzaExcepcionSi(unComerciante.noTenes(objetoAComprar).negate(),'El comerciante no tiene el artefacto buscado en stock.')
-		self.lanzaExcepcionSi(self.noLePodesComprar(unComerciante,objetoAComprar),'No te alcanzan las monedas de oro para adquirir el nuevo artefacto. Cumpli objetivos para aumentar tus monedas de oro.')
-		self.compra(objetoAComprar)
-		self.monedasDeOro(self.monedasDeOro()-unComerciante.montoDelImpuestoAdicional(objetoAComprar))
-	}
-
-	method poderComprar(objeto) = self.monedasDeOro() >= objeto.valor() || self.monedasDeOro() + self.hechizoPreferido().valor() >= objeto.valor()
-
-	method noPodesComprar(objeto) = self.poderComprar(objeto).negate()
+	method objetoConDescuento(objetoAComprar)=(objetoAComprar.valor()-objetoAComprar.descuento(self)).max(0)
+	
+	method noPodesComprar(objeto) = self.monedasDeOro() < objeto.valor()-objeto.descuento(self) 
 
 	method superasTuCargaMaximaAgregando(artefactoNuevo) = artefactoNuevo.pesoTotal() + self.pesoTotalDeArtefactos() > self.limiteDeCarga()
 
@@ -68,15 +61,17 @@ class Personaje {
 
 	method pesoTotalDeArtefactos() = self.artefactos().sum({ artefacto => artefacto.pesoTotal() })
 	
-	method lePodesComprarA(vendedor,objetoAComprar)=objetoAComprar.valor()+vendedor.montoDelImpuestoAdicional(objetoAComprar) < self.monedasDeOro()
+	method noLePodesComprar(vendedor,objetoAComprar)=objetoAComprar.valor()+vendedor.montoDelImpuestoAdicional(objetoAComprar) > self.monedasDeOro()+objetoAComprar.descuento(self)
 	
-	method noLePodesComprar(vendedor,objetoAComprar)=self.lePodesComprarA(vendedor,objetoAComprar).negate()
-
 	method lanzaExcepcionSi(condicion, mensaje) {
 		if (condicion) {
 			throw new NoSePuedeComprarOCanjear(mensaje)
 		}
 	}
+	
+	method artefactosSinEspejo() =self.artefactos().filter({artefacto=> artefacto!=espejo})
+	 
+	method mejorArtefacto()=self.artefactosSinEspejo().max({artefacto => artefacto.unidadDeLucha(self)})
 
 }
 

@@ -32,24 +32,24 @@ describe "Test de comercio" {
 	}
 
 	test "Si Xenia canjea su hechizo preferido por el hechizo basico, no se le descontara ninguna moneda" {
-		xenia.compra(hechizoBasico)
+		xenia.compraA(mockHnos,hechizoBasico)
 		assert.equals(xenia.monedasDeOro(), 100)
 	}
 
 	test "Si Thor canjea su hechizo preferido por el hechizo de logos, su monedas quedaran en 83" {
-		thor.compra(hechizoDeLogos)
+		thor.compraA(mockHnos,hechizoDeLogos)
 		assert.equals(thor.monedasDeOro(), 83)
 	}
 
 	test "Si Thor canjea dos veces el hechizo basico, su monedas quedaran en 90" {
-		thor.compra(hechizoBasico)
-		thor.compra(hechizoBasico)
+		thor.compraA(mockHnos,hechizoBasico)
+		thor.compraA(mockHnos,hechizoBasico)
 		assert.equals(thor.monedasDeOro(), 90)
 	}
 
 	test "Si Loki canjea su hechizo por el hechizo de logos, no podra" {
 		const excepcionEsperada = new NoSePuedeComprarOCanjear('No te alcanzan las monedas de oro para adquirir el nuevo artefacto. Cumpli objetivos para aumentar tus monedas de oro.')
-		assert.throwsExceptionLike(excepcionEsperada, { loki.compra(hechizoDeLogos)})
+		assert.throwsExceptionLike(excepcionEsperada, { loki.compraA(mockHnos,hechizoDeLogos)})
 	}
 
 	test "Si Xenia compra una espada, un collar divino con cinco perlas, una armadura sin refuerzo y otra con cota de malla (con 5 unidades de lucha), tendra 70,5 monedas de oro" {
@@ -70,17 +70,17 @@ describe "Test de comercio" {
 
 	test "Si Loki intenta comprar el espejo, no podra comprarlo ya que no tiene la cantidad suficiente de monedas. " {
 		const excepcionEsperada = new NoSePuedeComprarOCanjear('No te alcanzan las monedas de oro para adquirir el nuevo artefacto. Cumpli objetivos para aumentar tus monedas de oro.')
-		assert.throwsExceptionLike(excepcionEsperada, { loki.compra(espejo)})
+		assert.throwsExceptionLike(excepcionEsperada, { loki.compraA(mockHnos,espejo)})
 	}
 
 	test "Si Thor compra una armadura con bendicion y otra que tiene como refuerzo el hechizo alacachula, tendra 74 monedas" {
-		thor.compra(armaduraConAlacachula)
-		thor.compra(armaduraConBendicion)
+		thor.compraA(mockHnos,armaduraConAlacachula)
+		thor.compraA(mockHnos,armaduraConBendicion)
 		assert.equals(thor.monedasDeOro(), 74)
 	}
 
 	test "Si Xenia canjea un libro de hechizos que contiene al hechizo de logos y el hechizo basico, tendra 69 monedas de oro" {
-		xenia.compra(libroDeHechizos)
+		xenia.compraA(mockHnos,libroDeHechizos)
 		assert.equals(xenia.monedasDeOro(), 69)
 	}
 
