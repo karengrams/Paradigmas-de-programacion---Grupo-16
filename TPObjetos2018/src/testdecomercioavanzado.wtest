@@ -38,7 +38,7 @@ describe "Test de comercio avanzado" {
 		pastoriza.recategorizateCompulsivamente()
 		pastoriza.recategorizateCompulsivamente()
 		ursula.compraA(pastoriza, mascaraOscura)
-		assert.equals(ursula.monedasDeOro(), 86.4)
+		assert.equals(ursula.monedasDeOro(), 87.9)
 	}
 
 	test "Si Ursula le compra una mascara oscura a Prieto luego de ser recategorizado, tendra 88.25 monedas de oro" {

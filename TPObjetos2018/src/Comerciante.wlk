@@ -14,7 +14,10 @@ class ImpuestoDeComercianteIndependiente {
 
 	method impuestoAdicionalDe(objetoAVender) = objetoAVender.valor() * self.comision()
 
-	method recategorizaA(unComerciante) = self.comision(self.comision() * 2)
+	method recategorizaA(unComerciante){
+		if(self.comision() * 2 > 0.21){ unComerciante.tipoDeImpuesto(impuestoDeComercianteRegistrado)}
+		else{ self.comision(self.comision()*2) }
+	}
 
 }
 
